@@ -1,0 +1,120 @@
+{
+  "_id": "6897c3a26fe2b134583a0059",
+  "name": "alice",
+  "type": "adult",
+  "age": "30",
+  "emoji": "🙂",
+  "image": "/images/alice.jpg",
+  "id_number": "369777888653339",
+  "passport_number": "A66679813356",
+  "interests": [
+    "reading",
+    "travel"
+  ],
+  "mother_id": "398893837393991",
+  "father_id": "337373889933111",
+  "address": {
+    "street": "123 Main St",
+    "city": "Cape Town",
+    "country": "South Africa",
+    "_id": "6897c3a26fe2b134583a005a"
+  },
+  "businesses": [
+    {
+      "name": "Acme Corp",
+      "description": "My business",
+      "_id": "6897c3a26fe2b134583a005b"
+    }
+  ],
+  "documents": [],
+  "__v": 0,
+  "children": [
+    {
+      "_id": "6897c3a26fe2b134583a0059",
+      "name": "alice",
+      "type": "adult",
+      "age": "30",
+      "emoji": "🙂",
+      "image": "/images/alice.jpg",
+      "id_number": "369777888653339",
+      "passport_number": "A66679813356",
+      "interests": [
+        "reading",
+        "travel"
+      ],
+      "mother_id": "398893837393991",
+      "father_id": "337373889933111",
+      "address": {
+        "street": "123 Main St",
+        "city": "Cape Town",
+        "country": "South Africa",
+        "_id": "6897c3a26fe2b134583a005a"
+      },
+      "businesses": [
+        {
+          "name": "Acme Corp",
+          "description": "My business",
+          "_id": "6897c3a26fe2b134583a005b"
+        }
+      ],
+      "documents": [],
+      "__v": 0
+    },
+    {
+      "_id": "6897c3e06fe2b134583a005d",
+      "name": "mel",
+      "type": "adult",
+      "age": "30",
+      "emoji": "🙂",
+      "image": "/images/mel.jpg",
+      "id_number": "56977788863111",
+      "passport_number": "A66679813356",
+      "interests": [
+        "reading",
+        "travel"
+      ],
+      "mother_id": "369777888653339",
+      "father_id": "337373889933111",
+      "address": {
+        "street": "123 Main St",
+        "city": "Cape Town",
+        "country": "South Africa",
+        "_id": "6897c3e06fe2b134583a005e"
+      },
+      "businesses": [
+        {
+          "name": "Acme Corp",
+          "description": "My business",
+          "_id": "6897c3e06fe2b134583a005f"
+        }
+      ],
+      "documents": [],
+      "__v": 0
+    },
+    {
+      "_id": "6897c42a6fe2b134583a0061",
+      "name": "vite",
+      "type": "adult",
+      "age": "30",
+      "emoji": "🙂",
+      "image": "/images/vite.jpg",
+      "id_number": "56977788863666",
+      "passport_number": "A66679813356",
+      "interests": [
+        "reading",
+        "travel"
+      ],
+      "mother_id": "369777888653339",
+      "father_id": "337373889933111",
+      "address": {
+        "street": "123 Main St",
+        "city": "Cape Town",
+        "country": "South Africa",
+        "_id": "6897c42a6fe2b134583a0062"
+      },
+      "documents": [],
+      "businesses": [],
+      "__v": 0
+    }
+  ]
+}

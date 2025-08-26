@@ -1,0 +1,84 @@
+{
+    "_id": "6898acb414431b2616753dd3",
+    "name": "alice",
+    "gender": "female",
+    "type": "adult",
+    "age": "30",
+    "emoji": "🙂",
+    "image": "/images/alice.jpg",
+    "id_number": "369777888653339",
+    "passport_number": "A66679813356",
+    "interests": [
+      "reading",
+      "travel"
+    ],
+    "mother_id": "3697776767673339",
+    "father_id": "3373733535353111",
+    "children": [
+      {
+        "_id": "6897c3e06fe2b134583a005d",
+        "name": "mel",
+        "type": "adult",
+        "age": "30",
+        "emoji": "🙂",
+        "image": "/images/mel.jpg",
+        "id_number": "56977788863111",
+        "passport_number": "A66679813356",
+        "interests": [
+          "reading",
+          "travel"
+        ],
+        "mother_id": "369777888653339",
+        "father_id": "337373889933111",
+        "address": {
+          "street": "123 Main St",
+          "city": "Cape Town",
+          "country": "South Africa",
+          "_id": "6897c3e06fe2b134583a005e"
+        },
+        "businesses": [
+          {
+            "name": "Acme Corp",
+            "description": "My business",
+            "_id": "6897c3e06fe2b134583a005f"
+          }
+        ],
+        "documents": [],
+        "__v": 0
+      },
+      {
+        "_id": "6897c42a6fe2b134583a0061",
+        "name": "vite",
+        "type": "adult",
+        "age": "30",
+        "emoji": "🙂",
+        "image": "/images/vite.jpg",
+        "id_number": "56977788863999",
+        "passport_number": "A66679813356",
+        "interests": [
+          "reading",
+          "travel"
+        ],
+        "mother_id": "369777888653339",
+        "father_id": "337373889933111",
+        "address": {
+          "street": "123 Main St",
+          "city": "Cape Town",
+          "country": "South Africa",
+          "_id": "6897c42a6fe2b134583a0062"
+        },
+        "documents": [],
+        "businesses": [],
+        "__v": 0
+      }
+    ],
+    "address": {
+      "street": "123 Main St",
+      "city": "Cape Town",
+      "country": "South Africa",
+      "_id": "6898acb414431b2616753dd4"
+    },
+    "documents": [],
+    "businesses": [],
+    "__v": 0
+  }

@@ -1,0 +1,8 @@
+
+THINGS: 
+    CHILDREN: 
+        INDEX = 2
+    PROFESSIONAL:
+        INDEX = 0
+    SOCIAL:
+        INDEX = 1
