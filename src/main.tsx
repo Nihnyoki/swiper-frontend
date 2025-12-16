@@ -22,6 +22,8 @@ declare module '@tanstack/react-router' {
 
 // Render the app
 const rootElement = document.getElementById('root')!
+import * as PropTypes from 'prop-types'
+console.log(PropTypes.string); // should NOT be undefined
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(

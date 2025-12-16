@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/other/button'
 import { withTelemetry, TelemetryProps } from '@/lib/withTelemetry'
 
 type ButtonProps = React.ComponentProps<typeof Button> & TelemetryProps

@@ -1,10 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import React, { StrictMode } from 'react'
-import { Button } from '@/components/ui/button'
-import { withTelemetry } from '@/lib/withTelemetry'
-import { FamilyTreeSlider } from '@/components/FamilyTreeSlider'
-import { PreferedFamilyTreeSlider } from '@/components/666PreferedFamilyTreeSlider'
-import { LoginAndFamilyTree } from '@/components/LoginAndFamilyTree'
+import MainContainer from '@/components/MainContainer'
 
 export const Route = createFileRoute('/')({
   component: Index,
@@ -12,10 +8,8 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   return (
-
-    <div className="p-2">
-      <h3>PreferedSlider</h3>
-      <LoginAndFamilyTree/> 
+    <div className="w-screen h-screen flex ">
+      <MainContainer></MainContainer>
     </div>
 
   )

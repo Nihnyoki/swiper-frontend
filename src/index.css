@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
+/* Example: Use Poppins or Pacifico for a fun look */
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -117,6 +120,39 @@
   body {
     @apply bg-background text-foreground;
   }
+  
+        .custom-caret {
+          caret-color: transparent;
+          /* hide native caret */
+          position: relative;
+        }
+    
+        .custom-caret::after {
+          content: "";
+          position: absolute;
+          top: 50%;
+          left: 0.5rem;
+          /* padding-left offset */
+          width: 2px;
+          height: 70%;
+          /* height of cursor relative to input */
+          background-color: white;
+          transform: translateY(-50%);
+          animation: blink 1s step-start infinite;
+        }
+    
+        @keyframes blink {
+    
+          0%,
+          50% {
+            opacity: 1;
+          }
+    
+          51%,
+          100% {
+            opacity: 0;
+          }
+        }
 }
 
 /* Change inactive bullets to white */
@@ -129,4 +165,57 @@
 .swiper-pagination-bullet-active {
   background: white !important;
   opacity: 1;
+}
+
+.clip-folder {
+      clip-path: polygon(0 0,
+          /* top-left */
+          88% 0,
+          /* angled start */
+          90% 0,
+          /* true top-right corner */
+          100% 100%,
+          /* bottom-right */
+          0 100%
+          /* bottom-left */
+        );
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+/* Custom blinking cursor for 70% of input height */
+.custom-caret {
+  caret-color: white;
+  /* ensures blinking cursor is white */
+  position: relative;
+}
+
+.custom-caret::after {
+  content: '';
+  position: absolute;
+  top: 15%;
+  /* positions cursor vertically at 15% of input height */
+  left: 0;
+  width: 2px;
+  /* cursor width */
+  height: 70%;
+  /* cursor height */
+  background-color: white;
+  animation: blink 1s step-start infinite;
+  pointer-events: none;
+}
+
+/* Blink animation */
+@keyframes blink {
+
+  0%,
+  50%,
+  100% {
+    opacity: 1;
+  }
+
+  25%,
+  75% {
+    opacity: 0;
+  }
 }

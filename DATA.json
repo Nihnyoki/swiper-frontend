@@ -1,0 +1,361 @@
+[
+    {
+        "_id": "6897c3e06fe2b134583a005d",
+        "interests": [
+            "reading",
+            "travel"
+        ],
+        "businesses": [
+            {
+                "name": "Acme Corp",
+                "description": "My business",
+                "_id": "6897c3e06fe2b134583a005f"
+            }
+        ],
+        "documents": [],
+        "__v": 0,
+        "ADDRESS": {
+            "street": "123 Main St",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "_id": "6897c3e06fe2b134583a005e"
+        },
+        "FATHERID": "337373889933111",
+        "GENDER": "FEMALE",
+        "IDNUM": "56977788863111",
+        "MATHERID": "369777888653339",
+        "NAME": "FAMETHS",
+        "PASSPORTETHNUM": "A66679813356",
+        "AGETH": "96",
+        "EMOJIMETH": "💖",
+        "IMAGETH": "/IMAGETHS/FAMETHS.jpg",
+        "TYPETH": "ADULT",
+        "THINGS": [
+            "PROFESSIONAL",
+            "SOCIAL",
+            "CHILDREN"
+        ],
+        "CHILDREN": []
+    },
+    {
+        "_id": "6897c42a6fe2b134583a0061",
+        "interests": [
+            "reading",
+            "travel"
+        ],
+        "documents": [],
+        "businesses": [],
+        "__v": 0,
+        "ADDRESS": {
+            "street": "123 Main St",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "_id": "6897c42a6fe2b134583a0062"
+        },
+        "AGETH": "88",
+        "EMOJIMETH": "💖",
+        "FATHERID": "337373889933151",
+        "GENDER": "FEMALE",
+        "IDNUM": "56977788863999",
+        "IMAGETH": "/IMAGETHS/FARMIMETH.jpg",
+        "MATHERID": "56977788863111",
+        "NAME": "FARMIMETH",
+        "PASSPORTETHNUM": "A66679813356",
+        "TYPETH": "ADULT",
+        "THINGS": [
+            "PROFESSIONAL",
+            "SOCIAL",
+            "CHILDREN"
+        ],
+        "CHILDREN": []
+    },
+    {
+        "_id": "6898acb414431b2616753dd3",
+        "interests": [
+            "reading",
+            "travel"
+        ],
+        "documents": [],
+        "businesses": [],
+        "__v": 0,
+        "ADDRESS": {
+            "street": "123 Main St",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "_id": "6898acb414431b2616753dd4"
+        },
+        "AGETH": "26",
+        "CHILDREN": [
+            {
+                "_id": "68aaa6f46d489aeca091be86",
+                "interests": [
+                    "SPEECH",
+                    "TRAVEL"
+                ],
+                "documents": [],
+                "businesses": [],
+                "__v": 0,
+                "ADDRESS": {
+                    "street": "123 Main St",
+                    "city": "Cape Town",
+                    "country": "South Africa",
+                    "_id": "68aaa6f46d489aeca091be87"
+                },
+                "AGETH": "56",
+                "CHILDREN": [],
+                "EMOJIMETH": "💖",
+                "FATHERID": "369777888653339",
+                "GENDER": "FEMALE",
+                "IDNUM": "369777888666666",
+                "IMAGETH": "/IMAGETHS/MOCHEDAMETHS.png",
+                "MOTHERID": "169777888666666",
+                "NAME": "MOCHEDAMETHS",
+                "PASSPORTETHNUM": "A66679863356",
+                "TYPETH": "ADULT",
+                "THINGS": [
+                    "PROFESSIONAL",
+                    "SOCIAL",
+                    "CHILDREN"
+                ]
+            }
+        ],
+        "EMOJIMETH": "💖",
+        "FATHERID": "3373733535353111",
+        "GENDER": "FEMALE",
+        "IDNUM": "369777888653339",
+        "IMAGETH": "/IMAGETHS/MOHAMETHS.jpg",
+        "MATHERID": "3697776767673339",
+        "NAME": "MOHAMETHS",
+        "PASSPORTETHNUM": "A66679813356",
+        "THINGS": [
+            "PROFESSIONAL",
+            "SOCIAL",
+            "CHILDREN"
+        ]
+    },
+    {
+        "_id": "68aaa6f46d489aeca091be86",
+        "interests": [
+            "SPEECH",
+            "TRAVEL"
+        ],
+        "documents": [],
+        "businesses": [],
+        "__v": 0,
+        "ADDRESS": {
+            "street": "123 Main St",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "_id": "68aaa6f46d489aeca091be87"
+        },
+        "AGETH": "56",
+        "CHILDREN": [
+            {
+                "_id": "68aaa7bc6d489aeca091be89",
+                "interests": [
+                    "SPEECH",
+                    "TRAVEL"
+                ],
+                "documents": [],
+                "businesses": [],
+                "__v": 0,
+                "ADDRESS": {
+                    "street": "123 Main St",
+                    "city": "Cape Town",
+                    "country": "South Africa",
+                    "_id": "68aaa7bc6d489aeca091be8a"
+                },
+                "AGETH": "28",
+                "CHILDREN": [],
+                "EMOJIMETH": "💖",
+                "FATHERID": "369777888666666",
+                "GENDER": "FEMALE",
+                "IDNUM": "969777888666666",
+                "IMAGETH": "/IMAGETHS/TAMMOMEYTHS.jpg",
+                "MOTHERID": "869777888666666",
+                "NAME": "TAMMOMEYTHS",
+                "PASSPORTETHNUM": "A66679863556",
+                "THINGS": [
+                    "PROFESSIONAL",
+                    "SOCIAL",
+                    "CHILDREN"
+                ]
+            }
+        ],
+        "EMOJIMETH": "💖",
+        "FATHERID": "369777888653339",
+        "GENDER": "FEMALE",
+        "IDNUM": "369777888666666",
+        "IMAGETH": "/IMAGETHS/MOCHEDAMETHS.png",
+        "MOTHERID": "169777888666666",
+        "NAME": "MOCHEDAMETHS",
+        "PASSPORTETHNUM": "A66679863356",
+        "TYPETH": "ADULT",
+        "THINGS": [
+            "PROFESSIONAL",
+            "SOCIAL",
+            "CHILDREN"
+        ]
+    },
+    {
+        "_id": "68aaa7bc6d489aeca091be89",
+        "interests": [
+            "SPEECH",
+            "TRAVEL"
+        ],
+        "documents": [],
+        "businesses": [],
+        "__v": 0,
+        "ADDRESS": {
+            "street": "123 Main St",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "_id": "68aaa7bc6d489aeca091be8a"
+        },
+        "AGETH": "28",
+        "CHILDREN": [
+            {
+                "_id": "68ab45d0caeb5d68092226ef",
+                "NAME": "FARKHEGEMOCHEDATHS",
+                "GENDER": "FEMALE",
+                "TYPETH": "ADULT",
+                "AGETH": "56",
+                "EMOJIMETH": "💖",
+                "IMAGETH": "/IMAGETHS/FARKHEGEMOCHEDATHS.jpg",
+                "IDNUM": "669777888666666",
+                "PASSPORTETHNUM": "A66679863356",
+                "interests": [
+                    "SPEECH",
+                    "TRAVEL"
+                ],
+                "MOTHERID": "969777888666666",
+                "FATHERID": "669777881666366",
+                "CHILDREN": [],
+                "ADDRESS": {
+                    "street": "123 Main St",
+                    "city": "Cape Town",
+                    "country": "South Africa",
+                    "_id": "68aaa6f46d489aeca091be87"
+                },
+                "documents": [],
+                "businesses": [],
+                "__v": 0,
+                "THINGS": [
+                    "PROFESSIONAL",
+                    "SOCIAL",
+                    "CHILDREN"
+                ]
+            }
+        ],
+        "EMOJIMETH": "💖",
+        "FATHERID": "369777888666666",
+        "GENDER": "FEMALE",
+        "IDNUM": "969777888666666",
+        "IMAGETH": "/IMAGETHS/TAMMOMEYTHS.jpg",
+        "MOTHERID": "869777888666666",
+        "NAME": "TAMMOMEYTHS",
+        "PASSPORTETHNUM": "A66679863556",
+        "THINGS": [
+            "PROFESSIONAL",
+            "SOCIAL",
+            "CHILDREN"
+        ]
+    },
+    {
+        "_id": "68ab45d0caeb5d68092226ef",
+        "NAME": "FARKHEGEMOCHEDATHS",
+        "GENDER": "FEMALE",
+        "TYPETH": "ADULT",
+        "AGETH": "56",
+        "EMOJIMETH": "💖",
+        "IMAGETH": "/IMAGETHS/FARKHEGEMOCHEDATHS.jpg",
+        "IDNUM": "669777888666666",
+        "PASSPORTETHNUM": "A66679863356",
+        "interests": [
+            "SPEECH",
+            "TRAVEL"
+        ],
+        "MOTHERID": "969777888666666",
+        "FATHERID": "669777881666366",
+        "CHILDREN": [
+            {
+                "_id": "68ad93236a6adbc88776ac1e",
+                "NAME": "FAGEMETHEMES",
+                "GENDER": "FEMALE",
+                "TYPETH": "ADULT",
+                "AGETH": "63",
+                "EMOJIMETH": "💖",
+                "IMAGETH": "/IMAGETHS/FAGEMETHEMES.png",
+                "IDNUM": "669978888633666",
+                "PASSPORTETHNUM": "A66679863356",
+                "interests": [
+                    "SPEECH",
+                    "TRAVEL"
+                ],
+                "MOTHERID": "669777888666666",
+                "FATHERID": "669777888666666",
+                "CHILDREN": [],
+                "THINGS": [
+                    "PROFESSIONAL",
+                    "SOCIAL",
+                    "CHILDREN"
+                ],
+                "ADDRESS": {
+                    "street": "123 Main St",
+                    "city": "Cape Town",
+                    "country": "South Africa",
+                    "_id": "68aaa6f46d489aeca091be87"
+                },
+                "documents": [],
+                "businesses": [],
+                "__v": 0
+            }
+        ],
+        "ADDRESS": {
+            "street": "123 Main St",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "_id": "68aaa6f46d489aeca091be87"
+        },
+        "documents": [],
+        "businesses": [],
+        "__v": 0,
+        "THINGS": [
+            "PROFESSIONAL",
+            "SOCIAL",
+            "CHILDREN"
+        ]
+    },
+    {
+        "_id": "68ad93236a6adbc88776ac1e",
+        "NAME": "FAGEMETHEMES",
+        "GENDER": "FEMALE",
+        "TYPETH": "ADULT",
+        "AGETH": "63",
+        "EMOJIMETH": "💖",
+        "IMAGETH": "/IMAGETHS/FAGEMETHEMES.png",
+        "IDNUM": "669978888633666",
+        "PASSPORTETHNUM": "A66679863356",
+        "interests": [
+            "SPEECH",
+            "TRAVEL"
+        ],
+        "MOTHERID": "669777888666666",
+        "FATHERID": "669777888666666",
+        "CHILDREN": [],
+        "THINGS": [
+            "PROFESSIONAL",
+            "SOCIAL",
+            "CHILDREN"
+        ],
+        "ADDRESS": {
+            "street": "123 Main St",
+            "city": "Cape Town",
+            "country": "South Africa",
+            "_id": "68aaa6f46d489aeca091be87"
+        },
+        "documents": [],
+        "businesses": [],
+        "__v": 0
+    }
+]

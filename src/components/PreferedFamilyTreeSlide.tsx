@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
 import { useTelemetryContext } from '@/lib/TelemetryContext'
 import { TelemetryProps } from '@/lib/withTelemetry'
-import { Person } from '@/services/personService'
+import { Person } from '@/person/personService'
  
 const VITE_IMAGE_CORE_PATH = "http://localhost:3000/images"
 const VITE_CORE_PATH = "http://localhost:3000"

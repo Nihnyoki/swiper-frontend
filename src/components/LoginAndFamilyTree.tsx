@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PreferedFamilyTreeSlider } from './666PreferedFamilyTreeSlider';
+import { PreferedFamilyTreeSlider } from './PreferedFamilyTreeSlider';
 
 export function LoginAndFamilyTree() {
   const [idNumber, setIdNumber] = useState('');
@@ -17,7 +17,7 @@ export function LoginAndFamilyTree() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center justify-center">
       <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white p-6 rounded shadow">
         <label htmlFor="idNumber" className="block text-sm font-medium text-gray-700 mb-2">
           Enter your ID Number
