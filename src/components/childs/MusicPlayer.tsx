@@ -1,4 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, {
+    useRef,
+    useState,
+    useEffect,
+    forwardRef,
+    useImperativeHandle,
+} from "react";
+
+export interface MusicPlayerHandle {
+    togglePlay: () => void;
+    next: () => void;
+}
 
 interface AudioFile {
     id: string;
@@ -11,7 +22,11 @@ interface MusicPlayerProps {
     audioFiles: AudioFile[];
     defaultThumbnail?: string;
     stopAllSignal?: boolean;
+
+    onTrackChange?: (track: { index: number; title: string }) => void;
+    onPlayStateChange?: (playing: boolean) => void;
 }
+
 
 const formatTime = (seconds = 0) => {
     const m = Math.floor(seconds / 60);
@@ -19,17 +34,48 @@ const formatTime = (seconds = 0) => {
     return `${m}:${s.toString().padStart(2, "0")}`;
 };
 
-export function MusicPlayer({
-    audioFiles,
-    defaultThumbnail = "/default-music.jpeg",
-    stopAllSignal = false,
-}: MusicPlayerProps) {
+export const MusicPlayer = forwardRef(function MusicPlayer(
+    {
+        audioFiles,
+        defaultThumbnail = "/default-music.jpeg",
+        stopAllSignal = false,
+        onTrackChange,
+        onPlayStateChange,
+    }: MusicPlayerProps,
+    ref: React.Ref<MusicPlayerHandle>
+) {
+
     const audioRefs = useRef<HTMLAudioElement[]>([]);
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const [volume, setVolume] = useState(0.7);
 
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+
+    useImperativeHandle(ref, () => ({
+        togglePlay() {
+            if (activeIndex === null) {
+                playTrack(0);
+                return;
+            }
+
+            const audio = audioRefs.current[activeIndex];
+            if (!audio) return;
+
+            if (audio.paused) {
+                audio.play();
+                onPlayStateChange?.(true);
+            } else {
+                audio.pause();
+                onPlayStateChange?.(false);
+            }
+        },
+
+        next() {
+            playNext();
+        },
+    }));
+
 
     /** Play a specific track */
     const playTrack = (index: number) => {
@@ -46,7 +92,10 @@ export function MusicPlayer({
         });
 
         setActiveIndex(index);
+        onTrackChange?.({ index, title: audioFiles[index].title });
+        onPlayStateChange?.(true);
     };
+
 
     const togglePlay = (index: number) => {
         const audio = audioRefs.current[index];
@@ -57,16 +106,23 @@ export function MusicPlayer({
         } else {
             audio.pause();
             setActiveIndex(null);
+            onPlayStateChange?.(false);
         }
     };
+
 
     /** Auto-play next track */
     const playNext = () => {
         if (activeIndex === null) return;
         const next = activeIndex + 1;
+
         if (next < audioFiles.length) playTrack(next);
-        else setActiveIndex(null);
+        else {
+            setActiveIndex(null);
+            onPlayStateChange?.(false);
+        }
     };
+
 
     /** Stop playback when slide changes */
     useEffect(() => {
@@ -155,13 +211,13 @@ export function MusicPlayer({
             </div>
 
             {/* 🎵 Audio List */}
-            <div className="h-2/3 overflow-y-auto px-2 py-1">
+            <div className="h-2/3 overflow-y-auto px-1 ">
                 {audioFiles.map((file, index) => (
                     <div
                         key={file.id}
                         onClick={() => togglePlay(index)}
                         className={`
-                            group flex items-center gap-3 p-2 rounded-md cursor-pointer
+                            group flex items-center gap-2 p-1 rounded-md cursor-pointer
                             transition-all
                             ${activeIndex === index
                                 ? "bg-pink-600/40 border border-pink-400"
@@ -205,4 +261,4 @@ export function MusicPlayer({
             </div>
         </div>
     );
-}
+});

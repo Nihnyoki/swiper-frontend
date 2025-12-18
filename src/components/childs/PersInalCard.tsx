@@ -3,6 +3,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import TransparentDrawer from "./TransparentDrawer";
 import { MusicPlayer } from "./MusicPlayer";
+import type { MusicPlayerHandle } from "./MusicPlayer";
+
 
 export function PersonalCard({ person, childItems }) {
     const [activeTab, setActiveTab] = useState(0);
@@ -19,6 +21,14 @@ export function PersonalCard({ person, childItems }) {
     const [activeItem, setActiveItem] = useState<any | null>(null);
 
     const [musicPinned, setMusicPinned] = useState(false);
+    const [currentTrack, setCurrentTrack] = useState<{
+        index: number;
+        title: string;
+    } | null>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const musicPlayerRef = useRef<MusicPlayerHandle | null>(null);
+
+
 
 
     const handleUserActivity = () => {
@@ -138,6 +148,67 @@ export function PersonalCard({ person, childItems }) {
         }
     };
 
+    function MiniMusicFooter({
+        pinned,
+        currentTrack,
+        isPlaying,
+        onTogglePlay,
+        onNext,
+        onTogglePinned,
+    }) {
+        if (!pinned) {
+            return (
+                <div className="flex justify-between items-center px-4 py-2 bg-black/40">
+                    <label className="flex items-center gap-2 text-xs text-white">
+                        <input
+                            type="checkbox"
+                            checked={false}
+                            onChange={onTogglePinned}
+                        />
+                        Pin music
+                    </label>
+                    <span className="text-sm text-pink-300">✨ Nice ✨</span>
+                </div>
+            );
+        }
+
+        return (
+            <div className="flex items-center gap-3 px-4 py-2 bg-black/70 backdrop-blur-md">
+                <label className="flex items-center gap-1 text-xs text-white">
+                    <input
+                        type="checkbox"
+                        checked={true}
+                        onChange={onTogglePinned}
+                    />
+                    Pinned
+                </label>
+
+                <div className="flex-1 min-w-0">
+                    <p className="text-xs text-white truncate">
+                        🎵 {currentTrack?.title ?? "No track playing"}
+                    </p>
+                </div>
+
+                <button
+                    onClick={onTogglePlay}
+                    className="w-5 h-5  text-white"
+                >
+                    {isPlaying ? "⏸" : "▶"}
+                </button>
+
+                <button
+                    onClick={onNext}
+                    className="w-5 h-5  text-white"
+                >
+                    ⏭
+                </button>
+
+
+            </div>
+        );
+    }
+
+
     return (
         <div className="relative flex-col w-full h-full overflow-y-auto rounded-xl shadow-1xl flex bg-gradient-to-tr from-black/80 to-gray-400 text-white">
             {/* MAIN CONTENT */}
@@ -152,9 +223,15 @@ export function PersonalCard({ person, childItems }) {
                         slidesPerView={1}
                         className="flex flex-grow h-full"
                         onSlideChange={(swiper) => {
-                            stopAllMedia();   
+                            if (!musicPinned) {
+                                stopAllMedia();
+                                playActiveMedia(swiper.activeIndex);
+                            }
                             setActiveIndex(swiper.activeIndex);
-                            playActiveMedia(swiper.activeIndex); // 2️⃣ autoplay new media
+
+                            //stopAllMedia();   
+                            //setActiveIndex(swiper.activeIndex);
+                            //playActiveMedia(swiper.activeIndex); // 2️⃣ autoplay new media
                         }}
                     >
                         {slides.map((item, index) => (
@@ -213,8 +290,11 @@ export function PersonalCard({ person, childItems }) {
                                 {item.type === "audio" && (
                                     <div className="w-full h-full flex justify-center items-start">
                                         <MusicPlayer
-                                            audioFiles={childItems[activeTab].data.filter((i) => i.type === "audio")}
-                                            stopAllSignal={activeIndex !== index} // stop if not active
+                                            ref={musicPlayerRef}
+                                            audioFiles={childItems[activeTab].data.filter(i => i.type === "audio")}
+                                            stopAllSignal={!musicPinned && activeIndex !== index}
+                                            onTrackChange={setCurrentTrack}
+                                            onPlayStateChange={setIsPlaying}
                                         />
                                     </div>
                                 )}
@@ -254,10 +334,20 @@ export function PersonalCard({ person, childItems }) {
             </div>
 
             {/* Footer */}
-            <div className="flex justify-between items-end px-4 py-2 bg-pink-10 text-sm text-pink-300 font-medium z-10">
-                <span>✨</span>
-                <span>{person?.VIBE || "✨ Nice ✨"}</span>
-            </div>
+            <MiniMusicFooter
+                pinned={musicPinned}
+                currentTrack={currentTrack}
+                isPlaying={isPlaying}
+                onTogglePinned={() => setMusicPinned(p => !p)}
+
+                onTogglePlay={() => {
+                    musicPlayerRef.current?.togglePlay();
+                }}
+
+                onNext={() => {
+                    musicPlayerRef.current?.next();
+                }}
+            />
 
 
             {/* UPLOAD DRAWER */}

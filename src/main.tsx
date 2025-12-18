@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-<script src="http://localhost:8097"></script>
+//<script src="http://localhost:8097"></script>
 import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 
