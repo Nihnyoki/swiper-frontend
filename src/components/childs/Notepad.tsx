@@ -5,12 +5,13 @@ import { v4 as uuid } from "uuid";
 import { DisableSwiperOnMapInteraction } from "./DisableSwiperOnMapInteraction";
 import { LocateUser } from "./LocateUser";
 import { Person } from "@/person/personService";
+import { SafeFilePicker } from "./SafeFilePicker";
 //import { LocateUser } from "./LocateUser";
 
 export interface Note {
     id: string;
     title: string;
-    text: string;
+    description: string;
     lat: number;
     lng: number;
     createdAt: number;
@@ -43,7 +44,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
     const { initialNotes = [], onMapDrag } = props;
     const [notes, setNotes] = useState<Note[]>(initialNotes);
     const [draftTitle, setDraftTitle] = useState("");
-    const [draftText, setDraftText] = useState("");
+    const [draftDescription, setdraftDescription] = useState("");
     const [draftAudio, setDraftAudio] = useState<File | null>(null);
     const [draftImage, setDraftImage] = useState<File | null>(null);
     const [playedNotes, setPlayedNotes] = useState<Set<string>>(new Set());
@@ -56,12 +57,12 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
     /** Imperative handle to add note at current location */
     useImperativeHandle(ref, () => ({
         addNoteAtCurrentLocation() {
-            if (!draftTitle || !draftText || !userLocation) return;
+            if (!draftTitle || !draftDescription || !userLocation) return;
             setNotes(prev => [
                 {
                     id: uuid(),
                     title: draftTitle,
-                    text: draftText,
+                    description: draftDescription,
                     lat: userLocation.lat,
                     lng: userLocation.lng,
                     createdAt: Date.now(),
@@ -70,7 +71,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
                 ...prev,
             ]);
             setDraftTitle("");
-            setDraftText("");
+            setdraftDescription("");
         }
     }));
 
@@ -84,14 +85,35 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         return null;
     }
 
+    useEffect(() => {
+        const recover = () => {
+            if (mapRef.current) {
+                setTimeout(() => {
+                    mapRef.current.invalidateSize({ animate: false });
+                }, 100);
+            }
+        };
+
+        window.addEventListener("focus", recover);
+        return () => window.removeEventListener("focus", recover);
+    }, []);
+
+    // Load initialNotes on mount or when they change
+    useEffect(() => {
+        if (initialNotes && initialNotes.length > 0) {
+            setNotes(initialNotes);
+            console.log(`\n\n\n\nInicial Notes: &{JSON.stringify(initialNotes)}`);
+        }
+    }, [initialNotes]);     
+
     /** Add note at selected location */
     const addNote = async (person: Person) => {
-        if (!draftTitle.trim() || !draftText.trim() || !selectedLocation) return;
+        if (!draftTitle.trim() || !draftDescription.trim() || !selectedLocation) return;
 
         const newNote = {
             id: uuid(),
             title: draftTitle,
-            text: draftText,
+            description: draftDescription,
             lat: selectedLocation.lat,
             lng: selectedLocation.lng,
             createdAt: Date.now(),
@@ -102,7 +124,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         // Prepare FormData for upload
         const formData = new FormData();
         formData.append("title", newNote.title);
-        formData.append("description", newNote.text);
+        formData.append("description", newNote.description);
         formData.append("lat", String(newNote.lat));
         formData.append("lng", String(newNote.lng));
         formData.append("remind", "true");
@@ -131,7 +153,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
             // Clear drafts
             setDraftTitle("");
-            setDraftText("");
+            setdraftDescription("");
             setSelectedLocation(null);
             setDraftAudio(null);
             setDraftImage(null);
@@ -314,11 +336,12 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         }
     }
 
+    
     return (
         <div className="flex flex-col w-full h-full bg-gradient-to-b from-purple-800 via-pink-800 to-purple-700 rounded-xl overflow-hidden">
 
             {/* MAP */}
-            <div className="h-1/2 w-full border-b border-black/10">
+            <div className="h-1/3 w-full border-b border-black/10">
                 <MapContainer className="w-full h-full rounded-b-xl">
                     <LocateUser fallback={[-26.2041, 28.0473]} zoom={27} /> 
                     <UserLocationMarker />
@@ -334,59 +357,58 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
             {/* INPUT */}
             <div className="p-2 border-t border-pink-400 flex flex-col gap-2">
-                <input
-                    className="w-full p-2 text-sm rounded-md bg-purple-900/50 text-pink-200 placeholder-pink-300 outline-none"
-                    placeholder="Note Title"
-                    value={draftTitle}
-                    onChange={e => setDraftTitle(e.target.value)}
-                />
-                <textarea
-                    className="w-full h-24 p-2 text-sm rounded-md bg-purple-900/50 text-pink-200 placeholder-pink-300 resize-y outline-none overflow-y-auto"
-                    placeholder={selectedLocation ? "Write your note…" : "Tap on the map to select a location"}
-                    value={draftText}
-                    onChange={e => setDraftText(e.target.value)}
-                />
-                <label className="flex items-center gap-2 text-pink-200 text-sm">
+                <div className="flex gap-2">
                     <input
-                        type="checkbox"
-                        checked={!!notes.find(n => n.remind)}
-                        onChange={(e) => {
-                            if (notes.length > 0) {
-                                setNotes(prev => prev.map(n => ({ ...n, remind: e.target.checked })));
-                            }
-                        }}
+                        className="flex-1 p-2 text-sm rounded-md bg-purple-900/50 text-pink-200 placeholder-pink-300 outline-none"
+                        placeholder="Note Title"
+                        value={draftTitle}
+                        onChange={e => setDraftTitle(e.target.value)}
                     />
-                    Remind me near this location
-                </label>
+                    <label className="flex items-center gap-1 text-xs text-pink-200 shrink-0">
+                        <input
+                            type="checkbox"
+                            checked={!!notes.find(n => n.remind)}
+                            onChange={(e) => {
+                                if (notes.length > 0) {
+                                    setNotes(prev => prev.map(n => ({ ...n, remind: e.target.checked })));
+                                }
+                            }}
+                        />
+                        Remind
+                    </label>
+                </div>
+
+                <textarea
+                    className="w-full h-20 p-2 text-sm rounded-md bg-purple-900/50 text-pink-200 placeholder-pink-300 resize-y outline-none overflow-y-auto"
+                    placeholder={selectedLocation ? "Write your note…" : "Tap on the map to select a location"}
+                    value={draftDescription}
+                    onChange={e => setdraftDescription(e.target.value)}
+                />
+
+                <div className="flex w-full gap-2">
+                    <div className="flex w-full h-13 gap-2 ">
+                        <SafeFilePicker
+                            label={draftAudio ? draftAudio.name : "Attach Audio"}
+                            accept="audio/*"
+                            onPick={setDraftAudio}
+                        />
+
+                        <SafeFilePicker
+                            label={draftImage ? draftImage.name : "Attach Image"}
+                            accept="image/*"
+                            onPick={setDraftImage}
+                        />
+                    </div>
+
+                </div>
+
                 <button
                     className="mt-2 w-full py-2 rounded-md bg-gradient-to-r from-purple-600 via-pink-600 to-purple-500 disabled:opacity-40 text-white font-semibold"
-                    disabled={!draftTitle || !draftText || !selectedLocation}
+                    disabled={!draftTitle || !draftDescription || !selectedLocation}
                     onClick={() => addNote(props.person)}
                 >
                     Add Note
                 </button>
-
-                {/* Audio Upload */}
-                <label className="flex flex-col text-pink-200 text-sm">
-                    Attach Audio (optional)
-                    <input
-                        type="file"
-                        accept="audio/*"
-                        onChange={e => setDraftAudio(e.target.files?.[0] || null)}
-                        className="mt-1 text-xs text-white"
-                    />
-                </label>
-                {/* Image Upload */}
-                <label className="flex flex-col text-pink-200 text-sm">
-                    Attach Image (optional)
-                    <input
-                        type="file"
-                        accept="image/*"
-                        onChange={e => setDraftImage(e.target.files?.[0] || null)}
-                        className="mt-1 text-xs text-white"
-                    />
-                </label>
-
             </div>
 
             {/* NOTES LIST */}
@@ -409,29 +431,24 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
                             }}
                         >
                             <div className="flex justify-between items-center">
-                                <p className="text-pink-300 font-semibold">{note.title}</p>
+                                <p className="text-pink-300 font-semibold truncate">{note.title}</p>
                                 <label className="flex items-center gap-1 text-xs text-pink-200">
                                     <input
                                         type="checkbox"
                                         checked={!!note.remind}
                                         onChange={async (e) => {
                                             const newRemind = e.target.checked;
-
-                                            // update locally
                                             setNotes(prev => prev.map(n => n.id === note.id ? { ...n, remind: newRemind } : n));
-
-                                            // Persist immediately
                                             await updateNoteReminder(props.person, note.id, newRemind);
-                                            // Reset fired flag if unchecked
                                             if (!newRemind) firedRemindersRef.current.delete(note.id);
-
                                         }}
                                     />
-                                    Remind Me
+                                    Remind
                                 </label>
                             </div>
 
-                            {isExpanded && <p className="text-pink-100 text-sm max-h-40 overflow-y-auto mt-1">{note.text}</p>}
+
+                            {isExpanded && <p className="text-pink-100 text-sm max-h-40 overflow-y-auto mt-1">{note.description}</p>}
                             <p className="text-[10px] text-pink-200/70 mt-1">
                                 📍 {note.lat.toFixed(4)}, {note.lng.toFixed(4)} — {timestamp}
                             </p>
@@ -440,8 +457,8 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
                         </div>
                     );
                 })}
-
             </div>
+
         </div>
     );
 });

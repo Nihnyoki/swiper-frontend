@@ -15,7 +15,7 @@ export function VideoForm({ onSubmit }: VideoFormProps) {
             <textarea name="description" placeholder="Description" className="p-2 bg-white/10 rounded"></textarea>
             <input type="text" name="tags" placeholder="Tags (comma separated)" className="p-2 bg-white/10 rounded" />
             <input type="text" name="creator" placeholder="Creator" className="p-2 bg-white/10 rounded" />
-            <input type="file" name="file" accept="video/*" className="p-2 bg-white/10 rounded" /> {/* ✅ name="file" */}
+            <input type="file" name="files" accept="video/*" className="p-2 bg-white/10 rounded" /> {/* ✅ name="file" */}
             <button className="w-full mt-4 py-3 bg-pink-500 text-white rounded-xl font-semibold">Save</button>
         </form>
     );

@@ -110,9 +110,8 @@ export function PersonalCard({ person, childItems }) {
     }
 
     const allItems = childItems[activeTab]?.data ?? [];
-
     const audioItems = allItems.filter((i) => i.type === "audio");
-    const nonAudioItems = allItems.filter((i) => i.type !== "audio");
+    const nonAudioItems = allItems.filter((i) => i.type !== "audio" && i.type !== "note");
 
     const slides = [
         ...(audioItems.length > 0
@@ -229,8 +228,8 @@ export function PersonalCard({ person, childItems }) {
                         slidesPerView={1}
                         className="flex flex-grow h-full"
                         
-                        allowTouchMove={!mapBeingDragged}
-                        touchStartPreventDefault={false} 
+                        allowTouchMove= {true} //{!mapBeingDragged}
+                        touchStartPreventDefault={true} 
                         onSwiper={(swiper) => {
                             swiperRef.current = swiper;
                         }}
@@ -296,8 +295,6 @@ export function PersonalCard({ person, childItems }) {
                                     </div>
                                 )}
 
-
-
                                 {/* AUDIO */}
                                 {item.type === "audio" && (
                                     <div className="w-full h-full flex justify-center items-start">
@@ -310,8 +307,6 @@ export function PersonalCard({ person, childItems }) {
                                         />
                                     </div>
                                 )}
-
-
 
                                 {/* IMAGE */}
                                 {item.type === "image" && (
@@ -334,10 +329,19 @@ export function PersonalCard({ person, childItems }) {
                                 {item.type === "notes" && (
                                     <div className="w-full h-full">
                                         <Notepad
-                                            onMapDrag={setMapBeingDragged} person={person}                                        />
+                                            onMapDrag={setMapBeingDragged}
+                                            person={person}
+                                            initialNotes={childItems[activeTab].data
+                                                .filter(i => i.type === "note")
+                                                .map(n => ({
+                                                    ...n,
+                                                    lat: Number(n.lat),
+                                                    lng: Number(n.lng),
+                                                }))
+                                            }
+                                        />
                                     </div>
                                 )}
-
 
                                 {/* Foreground text */}
                                 <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-30 text-center">

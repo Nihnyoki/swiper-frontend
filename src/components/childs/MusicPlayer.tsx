@@ -139,12 +139,14 @@ export const MusicPlayer = forwardRef(function MusicPlayer(
         });
     }, [volume]);
 
-    useEffect(() => {
+/*    
+      useEffect(() => {
         if (!stopAllSignal && audioRefs.current[0]) {
             audioRefs.current[0].play().catch(() => { });
             setActiveIndex(0);
         }
     }, [stopAllSignal]);
+*/
     
     /** Bind progress listeners to active audio */
     useEffect(() => {
@@ -177,8 +179,6 @@ export const MusicPlayer = forwardRef(function MusicPlayer(
     };
 
     const thumbnail = audioFiles[activeIndex ?? 0]?.thumbnailUrl || defaultThumbnail;
-
-    
     
     return (
         <div className="relative flex flex-col w-full h-full bg-black/80 rounded-xl overflow-hidden">
