@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import 'swiper/css'
 
-const VITE_IMAGE_CORE_PATH = "https://swiper-backend.onrender.com/IMAGETHS";
+const VITE_IMAGE_CORE_PATH = "swiper-backend-production.up.railway.app/IMAGETHS";
 
 interface ProfessionalProps {
     person: any;
