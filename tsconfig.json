@@ -9,6 +9,10 @@
       }
     ],
     "compilerOptions": {
+       "outDir": "./dist",
+        "rootDir": "./src",
+          //"module": "commonjs",
+          "target": "ES2021",
       "baseUrl": ".",
       "paths": {
         "@/*": ["./src/*"]

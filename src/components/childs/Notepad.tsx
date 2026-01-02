@@ -6,6 +6,7 @@ import { DisableSwiperOnMapInteraction } from "./DisableSwiperOnMapInteraction";
 import { LocateUser } from "./LocateUser";
 import { Person } from "@/person/personService";
 import { SafeFilePicker } from "./SafeFilePicker";
+import { uploadToSupabase } from "@/services/uploadToSupabase";
 //import { LocateUser } from "./LocateUser";
 
 export interface Note {
@@ -16,8 +17,8 @@ export interface Note {
     lng: number;
     createdAt: number;
     remind?: boolean;
-    audio?: { type: string, url: string };
-    image?: { type: string, url: string };
+        audio?: { type: string, url: string };
+        image?: { type: string, url: string };
 }
 
 interface NotepadProps {
@@ -53,6 +54,8 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
     const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
     const mapRef = useRef<L.Map | null>(null);
+    const [audioMedia, setAudioMedia] = useState<{ type: string; url: string } | null>(null);
+    const [imageMedia, setImageMedia] = useState<{ type: string; url: string } | null>(null);
 
     /** Imperative handle to add note at current location */
     useImperativeHandle(ref, () => ({
@@ -129,6 +132,19 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         formData.append("lng", String(newNote.lng));
         formData.append("remind", "true");
 
+        if (audioMedia) {
+            formData.append(
+                "audio",
+                JSON.stringify(audioMedia)
+            );
+        }
+
+        if (imageMedia) {
+            formData.append(
+                "image",
+                JSON.stringify(imageMedia)
+            );
+        }
         if (draftAudio) formData.append("files", draftAudio);
         if (draftImage) formData.append("files", draftImage);
 
@@ -157,6 +173,8 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
             setSelectedLocation(null);
             setDraftAudio(null);
             setDraftImage(null);
+            setAudioMedia(null);
+            setImageMedia(null);
         } catch (err) {
             console.error("Failed to save note:", err);
         }
@@ -294,7 +312,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
             console.log(`formData: ${formData}`);
 
-            const VITE_CORE_PATH = "http://localhost:3000";
+            const VITE_CORE_PATH = "swiper-backend-production.up.railway.app";
             const res = await fetch(`${VITE_CORE_PATH}/api/persons/media/${personId}`, {
                 method: "POST",
                 headers: {
@@ -317,7 +335,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
     async function updateNoteReminder(person: Person ,noteId: string, remind: boolean) {
         try {
             if (!person?._id) return;
-            const VITE_CORE_PATH = "http://localhost:3000";
+            const VITE_CORE_PATH = "swiper-backend-production.up.railway.app";
             const endpoint = "media"; // Or 'notes' if you have a dedicated endpoint
             const formData = new FormData();
             formData.append("remind", String(remind));
@@ -388,15 +406,25 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
                 <div className="flex w-full gap-2">
                     <div className="flex w-full h-13 gap-2 ">
                         <SafeFilePicker
-                            label={draftAudio ? draftAudio.name : "Attach Audio"}
                             accept="audio/*"
+                            label={draftAudio ? draftAudio.name : "Attach Audio"}
                             onPick={setDraftAudio}
+                            onUpload={async (file) => {
+                            const url = await uploadToSupabase(file, "audios");
+                            setAudioMedia({ type: "audio", url });
+                            console.log(`uploadToSupabase - path: ${url}`)
+                            }}
                         />
-
+                        
                         <SafeFilePicker
-                            label={draftImage ? draftImage.name : "Attach Image"}
                             accept="image/*"
+                            label={draftImage ? draftImage.name : "Attach Image"}
                             onPick={setDraftImage}
+                            onUpload={async (file) => {
+                            const url = await uploadToSupabase(file, "images");
+                            setImageMedia({ type: "image", url });
+                            console.log(`uploadToSupabase - path: ${url}`)
+                            }}
                         />
                     </div>
 

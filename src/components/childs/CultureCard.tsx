@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import 'swiper/css'
 
-const VITE_IMAGE_CORE_PATH = "http://localhost:3000/IMAGETHS";
+const VITE_IMAGE_CORE_PATH = "swiper-backend-production.up.railway.app/IMAGETHS";
 
 interface CultureCardProps {
     person: any;

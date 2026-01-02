@@ -20,8 +20,8 @@ export default defineConfig({
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
-        name: "My Personal App",
-        short_name: "PersonalApp",
+        name: "Sandile's",
+        short_name: "Sandile's Swiper",
         description: "A React PWA for personal media cards",
         theme_color: "#000000",
         background_color: "#000000",
@@ -48,19 +48,19 @@ export default defineConfig({
         ],
         screenshots: [
           {
-            src: "/screenshots/sefl-3.png",
+            src: "/screenshots/1.png",
             sizes: "636x1438",
             type: "image/png",
             label: "Home screen view",
           },
           {
-            src: "/screenshots/sefl-6.png",
+            src: "/screenshots/2.png",
             sizes: "670x1438",
             type: "image/png",
             label: "Media card view",
           },
           {
-            src: "/screenshots/sefl-8.png",
+            src: "/screenshots/3.png",
             sizes: "674x1466",
             type: "image/png",
             label: "Media card view",
@@ -69,6 +69,7 @@ export default defineConfig({
       },
     }),
   ],
+  base: '/',
   optimizeDeps: {
     include: ["prop-types"],
   },

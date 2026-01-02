@@ -7,7 +7,6 @@ import { FunCard } from './childs/FunCard'
 import { CultureCard } from './childs/CultureCard'
 import { PersonalCard } from './childs/PersInalCard'
  
-const VITE_IMAGE_CORE_PATH = "http://localhost:3000/IMAGETHS"
 
 interface PersonCardDetailsProps {
   person: any

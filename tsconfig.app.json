@@ -1,13 +1,18 @@
 {
+    "extends": "./tsconfig.json",
     "compilerOptions": {
-      "jsx": "react",
+  "module": "ESNext",
+    "target": "ES2021",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
       "strictNullChecks": true,
       "esModuleInterop": true,
       "allowSyntheticDefaultImports": true,
-      "moduleResolution": "node",
+      "types": ["vite/client"],
+      //"moduleResolution": "node",
       "baseUrl": ".",
       "paths": {
-        "@/*": ["./src/*"]
+        "@/*": ["src/*"]
       }
     }
   }
