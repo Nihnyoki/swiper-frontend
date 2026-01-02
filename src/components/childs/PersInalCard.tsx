@@ -80,7 +80,7 @@ export function PersonalCard({ person, childItems }) {
         mediaType: string
     ) {
         try {
-            const VITE_CORE_PATH = "swiper-backend-production.up.railway.app";
+            const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app";
             const endpoint = "media";
             const normalizedMediaType = mediaType.toLowerCase() as
                 | 'video'

@@ -312,7 +312,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
             console.log(`formData: ${formData}`);
 
-            const VITE_CORE_PATH = "swiper-backend-production.up.railway.app";
+            const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app";
             const res = await fetch(`${VITE_CORE_PATH}/api/persons/media/${personId}`, {
                 method: "POST",
                 headers: {
@@ -335,7 +335,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
     async function updateNoteReminder(person: Person ,noteId: string, remind: boolean) {
         try {
             if (!person?._id) return;
-            const VITE_CORE_PATH = "swiper-backend-production.up.railway.app";
+            const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app";
             const endpoint = "media"; // Or 'notes' if you have a dedicated endpoint
             const formData = new FormData();
             formData.append("remind", String(remind));

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import 'swiper/css'
 
-const VITE_IMAGE_CORE_PATH = "swiper-backend-production.up.railway.app/IMAGETHS";
+const VITE_IMAGE_CORE_PATH = "https://swiper-backend-production.up.railway.app/IMAGETHS";
 
 interface FunCardProps {
     person: any;

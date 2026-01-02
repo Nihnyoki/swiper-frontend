@@ -10,9 +10,9 @@
   import { getPersonsHighestThingsValWhereChildItemsExist } from '@/lib/ents'
   import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 
-  const VITE_IMAGE_PENTENT_PATH = "swiper-backend-production.up.railway.app/PEGETENT/"
-  const VITE_IMAGE_CORE_PATH = "swiper-backend-production.up.railway.app/"
-  const VITE_CORE_PATH = "swiper-backend-production.up.railway.app"
+  const VITE_IMAGE_PENTENT_PATH = "https://swiper-backend-production.up.railway.app/PEGETENT/"
+  const VITE_IMAGE_CORE_PATH = "https://swiper-backend-production.up.railway.app/"
+  const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app"
 
   function ContentTypeCard({ person, contentType }: { person: Person, contentType: string }) {
     const isPlaceholder = person?.isPlaceholder;
