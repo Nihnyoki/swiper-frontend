@@ -120,7 +120,7 @@ export default function MakeFormPerson({ onSubmit, onClose }: MakeFormPersonProp
         );
 
         try {
-            const res = await fetch("https://swiper-backend.railway.internal/api/persons", {
+            const res = await fetch("https://swiper-backend-production.up.railway.app/api/persons", {
                 method: "POST",
                 body: formData,
             });

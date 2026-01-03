@@ -6,8 +6,8 @@ import { useTelemetryContext } from '@/lib/TelemetryContext'
 import { TelemetryProps } from '@/lib/withTelemetry'
 import { Person } from '@/person/personService'
  
-const VITE_IMAGE_CORE_PATH = "https://swiper-backend.railway.internal/images"
-const VITE_CORE_PATH = "https://swiper-backend.railway.internal"
+const VITE_IMAGE_CORE_PATH = "https://swiper-backend-production.up.railway.app/images"
+const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app"
  
 function PersonCard({ person }: { person: any }) {
   const isPlaceholder = person?.isPlaceholder;
