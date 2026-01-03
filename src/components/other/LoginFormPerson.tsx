@@ -9,7 +9,7 @@ interface LoginFormPersonProps {
     onClose: () => void;
 }
 
-const VITE_CORE_PATH = "https://swiper-backend.railway.internal";
+const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app";
 
 export default function LoginFormPerson({ idNum, onSubmit, onError, onClose }: LoginFormPersonProps) {
     const [loading, setLoading] = useState(false);
