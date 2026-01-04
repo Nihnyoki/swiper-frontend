@@ -9,7 +9,7 @@ interface LoginFormPersonProps {
     onClose: () => void;
 }
 
-const BACKEND_BASE_URL = import.meta.env.BACKEND_BASE_URL;
+const BACKEND_SWYPER_BASE_URL = import.meta.env.BACKEND_SWYPER_BASE_URL;
 
 export default function LoginFormPerson({ idNum, onSubmit, onError, onClose }: LoginFormPersonProps) {
     const [loading, setLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function LoginFormPerson({ idNum, onSubmit, onError, onClose }: L
         const checkPerson = async () => {
             setLoading(true);
             try {
-                const response = await axios.get<Person>(`${BACKEND_BASE_URL}/api/persons/${idNum}/with-children`);
+                const response = await axios.get<Person>(`${BACKEND_SWYPER_BASE_URL}/api/persons/${idNum}/with-children`);
                 const person = response.data;
 
                 if (!person || !person.IDNUM) {
