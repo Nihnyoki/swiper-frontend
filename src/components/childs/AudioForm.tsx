@@ -23,9 +23,8 @@ export function AudioForm({ onSubmit }: AudioFormProps) {
                                                     label={draftAudio ? draftAudio.name : "Attach Audio"}
                                                     onPick={setDraftAudio}
                                                     onUpload={async (file) => {
-                                                    const videoUrl = await uploadToSupabase(file, "audios");
+                                                    const audioUrl = await uploadToSupabase(file, "audios");
                                                     setAudioUrl(audioUrl);
-                                                    console.log(`uploadToSupabase - path: ${audioUrl}`)
                                                     }}
                                                 />
             <input type="hidden" name="url" value={audioUrl ?? ""} />
