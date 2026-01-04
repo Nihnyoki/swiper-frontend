@@ -80,7 +80,7 @@ export function PersonalCard({ person, childItems }) {
         mediaType: string
     ) {
         try {
-            const BACKEND_SWYPER_BASE_URL = import.meta.env.BACKEND_SWYPER_BASE_URL;
+            const VITE_BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
             const endpoint = "media";
             const normalizedMediaType = mediaType.toLowerCase() as
                 | 'video'
@@ -89,7 +89,7 @@ export function PersonalCard({ person, childItems }) {
                 | 'pdf';
 
             const res = await fetch(
-                `${BACKEND_SWYPER_BASE_URL}/api/persons/${endpoint}/${personId}`,
+                `${VITE_BACKEND_BASE_URL}/api/persons/${endpoint}/${personId}`,
                 {
                     method: "POST",
                     headers: {

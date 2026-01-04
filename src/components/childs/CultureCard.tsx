@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import 'swiper/css'
 import { getImageUrl } from "../../lib/utils"
 
-const BACKEND_IMAGE_URL =`${import.meta.env.BACKEND_SWYPER_BASE_URL}/${import.meta.env.USER_IMAGES_PATH}`;
+const BACKEND_IMAGE_URL =`${import.meta.env.VITE_BACKEND_BASE_URL}/${import.meta.env.VITE_USER_IMAGES_PATH}`;
 
 interface CultureCardProps {
     person: any;

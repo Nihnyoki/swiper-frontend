@@ -11,9 +11,9 @@
   import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { getImageUrl } from '../lib/utils'
 
-  const BACKEND_IMAGE_URL =`${import.meta.env.BACKEND_SWYPER_BASE_URL}/${import.meta.env.USER_IMAGES_PATH}`;
-  const BACKEND_SWYPER_BASE_URL = import.meta.env.BACKEND_SWYPER_BASE_URL;
-  const BACKEND_IMAGE_CATAGORY_PATH = `${BACKEND_SWYPER_BASE_URL}/PEGETENT/`;
+  const BACKEND_IMAGE_URL =`${import.meta.env.VITE_BACKEND_BASE_URL}/${import.meta.env.VITE_USER_IMAGES_PATH}`;
+  const VITE_BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
+  const BACKEND_IMAGE_CATAGORY_PATH = `${VITE_BACKEND_BASE_URL}/PEGETENT/`;
 
   function ContentTypeCard({ person, contentType }: { person: Person, contentType: string }) {
     const isPlaceholder = person?.isPlaceholder;
@@ -77,7 +77,7 @@ import { getImageUrl } from '../lib/utils'
     const fetchPersonData = async function (id: string): Promise<Person[]> {
       setLoading(true)
       try {
-        const response = await axios.get<Person>(`${BACKEND_SWYPER_BASE_URL}/api/persons/${id}/with-children`);
+        const response = await axios.get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons/${id}/with-children`);
         const person = response.data;
         console.log(`Fetched person: ${JSON.stringify(person)}`);
         
@@ -97,7 +97,7 @@ import { getImageUrl } from '../lib/utils'
     const getChildTree = async function (id: string): Promise<Person> {
       setLoading(true)
       try {
-        const response = await axios.get<Person>(`${BACKEND_SWYPER_BASE_URL}/api/persons/${id}/with-children`)
+        const response = await axios.get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons/${id}/with-children`)
         const person = response.data as unknown as Person
         console.log(`Fetched person: ${JSON.stringify(person)}`)
         
@@ -140,9 +140,9 @@ import { getImageUrl } from '../lib/utils'
       setLoading(true)
       try {
         
-        console.log(`FamilyTreeSlider - param[BACKEND_SWYPER_BASE_URL]=`, BACKEND_SWYPER_BASE_URL)
+        console.log(`FamilyTreeSlider - param[VITE_BACKEND_BASE_URL]=`, VITE_BACKEND_BASE_URL)
         
-        const response = await axios.get<Person[]>(`${BACKEND_SWYPER_BASE_URL}/api/persons/complete`);
+        const response = await axios.get<Person[]>(`${VITE_BACKEND_BASE_URL}/api/persons/complete`);
         
         console.log(`FamilyTreeSlider - response[/api/persons/complete]=`, JSON.stringify(response));
 

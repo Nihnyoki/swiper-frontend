@@ -7,8 +7,8 @@ import { TelemetryProps } from '@/lib/withTelemetry'
 import { Person } from '@/person/personService'
  import { getImageUrl } from "../lib/utils"
 
-const BACKEND_IMAGE_URL =`${import.meta.env.BACKEND_SWYPER_BASE_URL}/${import.meta.env.USER_IMAGES_PATH}`;
-const BACKEND_SWYPER_BASE_URL = import.meta.env.BACKEND_SWYPER_BASE_URL;
+const BACKEND_IMAGE_URL =`${import.meta.env.VITE_BACKEND_BASE_URL}/${import.meta.env.VITE_USER_IMAGES_PATH}`;
+const VITE_BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
  
 function PersonCard({ person }: { person: any }) {
   const isPlaceholder = person?.isPlaceholder;
@@ -57,8 +57,8 @@ export function PreferedFamilyTreeSlider({
   const fetchPersonData = useCallback(async (id: string) => {
     setLoading(true)
     try {
-      //const response = await axios.get<Person>(`${BACKEND_SWYPER_BASE_URL}/api/persons/${id}/with-children`)
-      const response = await axios.get<Person>(`${BACKEND_SWYPER_BASE_URL}/api/persons`)
+      //const response = await axios.get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons/${id}/with-children`)
+      const response = await axios.get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons`)
       const person = response.data
       console.log(`Fetched person: ${JSON.stringify(person)}`)
       
@@ -130,7 +130,7 @@ export function PreferedFamilyTreeSlider({
  
   async function getChildTree(id_number: string): Promise<Person> {
     return axios
-      .get<Person>(`${BACKEND_SWYPER_BASE_URL}/api/persons/${id_number}/with-children`)
+      .get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons/${id_number}/with-children`)
       .then((res) => res.data) as unknown as Person
   }
  

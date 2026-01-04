@@ -1,0 +1,5 @@
+grep -rl "BACKEND_BASE_URL" . | xargs sed -i '' 's/BACKEND_BASE_URL/BACKEND_SWYPER_BASE_URL/g'
+
+grep -rl "BACKEND_SWYPER_BASE_URL" . | xargs sed -i '' 's/BACKEND_SWYPER_BASE_URL/VITE_BACKEND_BASE_URL/g'
+
+grep -rl "USER_IMAGES_PATH" . | xargs sed -i '' 's/USER_IMAGES_PATH/VITE_USER_IMAGES_PATH/g'
