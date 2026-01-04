@@ -47,6 +47,9 @@ export default function MakeFormPerson({ onSubmit, onClose }: MakeFormPersonProp
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
+    const BACKEND_BASE_URL = import.meta.env.BACKEND_BASE_URL;
+
+
     const ACTIVITY_OPTIONS = [
         "SOCIAL",
         "PROFESSIONAL",
@@ -120,7 +123,7 @@ export default function MakeFormPerson({ onSubmit, onClose }: MakeFormPersonProp
         );
 
         try {
-            const res = await fetch("https://swiper-backend-production.up.railway.app/api/persons", {
+            const res = await fetch(`${BACKEND_BASE_URL}/api/persons`, {
                 method: "POST",
                 body: formData,
             });
