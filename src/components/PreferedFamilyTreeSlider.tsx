@@ -139,7 +139,13 @@ import { getImageUrl } from '../lib/utils'
     const fetchPeopleTree = async function (start: boolean): Promise<Person[]> {
       setLoading(true)
       try {
-        const response = await axios.get<Person[]>(`${BACKEND_BASE_URL}/api/persons/complete`)
+        
+        console.log(`FamilyTreeSlider - param[BACKEND_BASE_URL]=`, BACKEND_BASE_URL)
+        
+        const response = await axios.get<Person[]>(`${BACKEND_BASE_URL}/api/persons/complete`);
+        
+        console.log(`FamilyTreeSlider - response[/api/persons/complete]=`, JSON.stringify(response));
+
         const people = response.data as unknown as Person[]
         setPersonSteps([{ people: people, index: 0 }])
 
