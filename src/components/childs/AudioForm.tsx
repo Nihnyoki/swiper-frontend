@@ -19,7 +19,7 @@ export function AudioForm({ onSubmit }: AudioFormProps) {
             <textarea name="description" placeholder="Description" className="p-2 bg-white/10 rounded"></textarea>
             <input type="text" name="tags" placeholder="Tags (comma separated)" className="p-2 bg-white/10 rounded" />
             <SafeFilePicker
-                                                    accept="video/*"
+                                                    accept="audio/*"
                                                     label={draftAudio ? draftAudio.name : "Attach Audio"}
                                                     onPick={setDraftAudio}
                                                     onUpload={async (file) => {
