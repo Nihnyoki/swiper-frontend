@@ -9,15 +9,16 @@
   import FormPerson from './other/FormPerson'
   import { getPersonsHighestThingsValWhereChildItemsExist } from '@/lib/ents'
   import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
+import { getImageUrl } from '../lib/utils'
 
-  const VITE_IMAGE_PENTENT_PATH = "https://swiper-backend-production.up.railway.app/PEGETENT/"
-  const VITE_IMAGE_CORE_PATH = "https://swiper-backend-production.up.railway.app/"
-  const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app"
+  const BACKEND_IMAGE_URL =`${import.meta.env.BACKEND_BASE_URL}/${import.meta.env.USER_IMAGES_PATH}`;
+  const BACKEND_BASE_URL = import.meta.env.BACKEND_BASE_URL;
+  const BACKEND_IMAGE_CATAGORY_PATH = `${BACKEND_BASE_URL}/PEGETENT/`;
 
   function ContentTypeCard({ person, contentType }: { person: Person, contentType: string }) {
     const isPlaceholder = person?.isPlaceholder;
 
-    const imageAddress = `${VITE_IMAGE_PENTENT_PATH}/${contentType}.jpg`
+    const imageAddress = `${BACKEND_IMAGE_CATAGORY_PATH}/${contentType}.jpg`
 
     return (
       <div
@@ -76,7 +77,7 @@
     const fetchPersonData = async function (id: string): Promise<Person[]> {
       setLoading(true)
       try {
-        const response = await axios.get<Person>(`${VITE_CORE_PATH}/api/persons/${id}/with-children`);
+        const response = await axios.get<Person>(`${BACKEND_BASE_URL}/api/persons/${id}/with-children`);
         const person = response.data;
         console.log(`Fetched person: ${JSON.stringify(person)}`);
         
@@ -96,8 +97,7 @@
     const getChildTree = async function (id: string): Promise<Person> {
       setLoading(true)
       try {
-        const response = await axios.get<Person>(`${VITE_CORE_PATH}/api/persons/${id}/with-children`)
-        //const response = await axios.get<Person>(`${VITE_CORE_PATH}/api/persons/`)
+        const response = await axios.get<Person>(`${BACKEND_BASE_URL}/api/persons/${id}/with-children`)
         const person = response.data as unknown as Person
         console.log(`Fetched person: ${JSON.stringify(person)}`)
         
@@ -116,7 +116,7 @@
                   TYPETH: 'No Descendants',
                   AGETH: 'N/A',
                   IFATH: '',
-                  IMAGETH: `${VITE_IMAGE_PENTENT_PATH}/PHELIM.jpg`,
+                  IMAGETH: `${BACKEND_IMAGE_CATAGORY_PATH}/PHELIM.jpg`,
                   EMOJIMETH: '🚫',
                   isPlaceholder: true,
                 }]
@@ -139,7 +139,7 @@
     const fetchPeopleTree = async function (start: boolean): Promise<Person[]> {
       setLoading(true)
       try {
-        const response = await axios.get<Person[]>(`${VITE_CORE_PATH}/api/persons/complete`)
+        const response = await axios.get<Person[]>(`${BACKEND_BASE_URL}/api/persons/complete`)
         const people = response.data as unknown as Person[]
         setPersonSteps([{ people: people, index: 0 }])
 
@@ -329,7 +329,7 @@
                       LASTNAME: "WORKETH",
                       TYPETH: "No Descendants",
                       AGETH: "WORKETH",
-                      IMAGETH: `${VITE_IMAGE_CORE_PATH}/CULTURE.jpg`,
+                      IMAGETH: `${BACKEND_IMAGE_URL}/CULTURE.jpg`,
                       EMOJIMETH: "💵",
                       isPlaceholder: true,
                     }}
@@ -359,9 +359,10 @@
 
     const isPlaceholder = person?.isPlaceholder;
 
-    const imageAddress = person?.IFATH?.path
-      ? `${VITE_IMAGE_CORE_PATH}${person.IFATH.path.replace(/^public\//, "")}`
-      : null;
+      const imageAddress = getImageUrl(
+      BACKEND_IMAGE_URL,
+      person?.IMAGE
+      );
 
     return (
       <div

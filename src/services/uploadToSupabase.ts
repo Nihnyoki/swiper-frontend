@@ -26,5 +26,5 @@ export async function uploadToSupabase(
 
   console.log(`upload to superbase done, path:`, path);
 
-  return path; // store this in MongoDB
+  return path;
 }

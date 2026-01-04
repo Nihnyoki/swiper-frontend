@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import 'swiper/css'
+import { getImageUrl } from "../../lib/utils"
 
-const VITE_IMAGE_CORE_PATH = "https://swiper-backend-production.up.railway.app/IMAGETHS";
+const BACKEND_IMAGE_URL =`${import.meta.env.BACKEND_BASE_URL}/${import.meta.env.USER_IMAGES_PATH}`;
 
 interface FunCardProps {
     person: any;
@@ -20,12 +21,10 @@ export function FunCard({
   const [activeTab, setActiveTab] = useState("Friends")
   const funTiles = ["Parties", "Gaming", "Travel", "Jokes", "Music"];
 
-  const imageAddress = person?.IMAGETH
-    ? person.IMAGETH.startsWith('/IMAGETHS')
-      ? `${VITE_IMAGE_CORE_PATH}${person.IMAGETH.replace('/IMAGETHS', '')}`
-      : `${VITE_IMAGE_CORE_PATH}/${person.IMAGETH.split('/').pop()}`
-    : null;
-
+    const imageAddress = getImageUrl(
+    BACKEND_IMAGE_URL,
+    person?.IMAGE
+    );
     return (
         <div
             className={`relative flex-col w-full h-full overflow-y-auto rounded-xl shadow-1xl flex bg-gradient-to-tr bg-black/80 to-grey-400 text-white animate-pulse-slow`}

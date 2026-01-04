@@ -5,18 +5,18 @@ import 'swiper/css'
 import { useTelemetryContext } from '@/lib/TelemetryContext'
 import { TelemetryProps } from '@/lib/withTelemetry'
 import { Person } from '@/person/personService'
- 
-const VITE_IMAGE_CORE_PATH = "https://swiper-backend-production.up.railway.app/images"
-const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app"
+ import { getImageUrl } from "../lib/utils"
+
+const BACKEND_IMAGE_URL =`${import.meta.env.BACKEND_BASE_URL}/${import.meta.env.USER_IMAGES_PATH}`;
+const BACKEND_BASE_URL = import.meta.env.BACKEND_BASE_URL;
  
 function PersonCard({ person }: { person: any }) {
   const isPlaceholder = person?.isPlaceholder;
  
-  const imageAddress = person?.image
-    ? person.image.startsWith('/images')
-      ? `${VITE_IMAGE_CORE_PATH}${person.image.replace('/images', '')}`
-      : `${VITE_IMAGE_CORE_PATH}/${person.image.split('/').pop()}`
-    : null;
+      const imageAddress = getImageUrl(
+      BACKEND_IMAGE_URL,
+      person?.IMAGE
+      );
  
   return (
     <div
@@ -57,8 +57,8 @@ export function PreferedFamilyTreeSlider({
   const fetchPersonData = useCallback(async (id: string) => {
     setLoading(true)
     try {
-      //const response = await axios.get<Person>(`${VITE_CORE_PATH}/api/persons/${id}/with-children`)
-      const response = await axios.get<Person>(`${VITE_CORE_PATH}/api/persons`)
+      //const response = await axios.get<Person>(`${BACKEND_BASE_URL}/api/persons/${id}/with-children`)
+      const response = await axios.get<Person>(`${BACKEND_BASE_URL}/api/persons`)
       const person = response.data
       console.log(`Fetched person: ${JSON.stringify(person)}`)
       
@@ -130,7 +130,7 @@ export function PreferedFamilyTreeSlider({
  
   async function getChildTree(id_number: string): Promise<Person> {
     return axios
-      .get<Person>(`${VITE_CORE_PATH}/api/persons/${id_number}/with-children`)
+      .get<Person>(`${BACKEND_BASE_URL}/api/persons/${id_number}/with-children`)
       .then((res) => res.data) as unknown as Person
   }
  
