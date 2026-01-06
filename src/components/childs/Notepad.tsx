@@ -6,7 +6,8 @@ import { DisableSwiperOnMapInteraction } from "./DisableSwiperOnMapInteraction";
 import { LocateUser } from "./LocateUser";
 import { Person } from "@/person/personService";
 import { SafeFilePicker } from "./SafeFilePicker";
-import { uploadToSupabase } from "@/services/uploadToSupabase";
+import { uploadToSupabase } from "../../services/superbase/uploadToSupabase";
+//import { uploadToSupabase } from "@/services/uploadToSupabase";
 //import { LocateUser } from "./LocateUser";
 
 export interface Note {
@@ -410,6 +411,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
                             label={draftAudio ? draftAudio.name : "Attach Audio"}
                             onPick={setDraftAudio}
                             onUpload={async (file) => {
+                                
                             const url = await uploadToSupabase(file, "audios");
                             setAudioMedia({ type: "audio", url });
                             console.log(`uploadToSupabase - path: ${url}`)
