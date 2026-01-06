@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SafeFilePicker } from "./SafeFilePicker";
-import { uploadToSupabase } from "../../services/uploadToSupabase";
+import { uploadToSupabase } from "../../services/superbase/uploadToSupabase";
 
 interface AudioFormProps {
     onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
