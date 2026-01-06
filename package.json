@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "tw:init": "tailwindcss init -p",
-    "react-devtools": "react-devtools"
+    "react-devtools": "react-devtools",
+    "test": "vitest"
   },
   "dependencies": {
     "@nestjs/swagger": "^11.2.0",
