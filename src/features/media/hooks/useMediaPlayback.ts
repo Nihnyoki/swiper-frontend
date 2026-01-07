@@ -18,7 +18,10 @@ export function useMediaPlayback() {
    * ---------------------------- */
   const register = useCallback(
     (id: string, element: HTMLMediaElement | null) => {
-      if (!element) return;
+      if (!element) {
+    delete mediaRefs.current[id];
+    return;
+  }
       mediaRefs.current[id] = element;
     },
     []

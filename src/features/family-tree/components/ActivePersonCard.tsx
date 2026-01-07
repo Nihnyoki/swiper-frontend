@@ -1,5 +1,5 @@
 import { Person } from '@/domains/person/person.types';
-import { PersonCard } from '@/components/PersonCard';
+import { PersonCard } from './PersonCard';
 
 interface Props {
   person: Person;

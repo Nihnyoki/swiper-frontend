@@ -26,26 +26,34 @@ export function FamilyTreeSlider() {
   if (!activePerson) return null;
 
   return (
-    <>
+  <div className="flex w-full h-full overflow-hidden">
+    {/* LEFT: Active Person */}
+    <div className="w-full h-full flex-shrink-0">
       <ActivePersonCard person={activePerson} />
+    </div>
 
+    {/* RIGHT: Children Swiper */}
+    <div className="w-full h-full flex-shrink-0">
       <Swiper
+        className="w-full h-full"
         direction="horizontal"
         onSlideNextTransitionEnd={() =>
-          gestures.onHorizontalSwipe('left')
+          gestures.onHorizontalSwipe("left")
         }
         onSlidePrevTransitionEnd={() =>
-          gestures.onHorizontalSwipe('right')
+          gestures.onHorizontalSwipe("right")
         }
       >
-        <SwiperSlide>
+        <SwiperSlide className="w-full h-full">
           <ChildStack
             children={children}
-            onSwipeUp={() => gestures.onVerticalSwipe('up')}
-            onSwipeDown={() => gestures.onVerticalSwipe('down')}
+            onSwipeUp={() => gestures.onVerticalSwipe("up")}
+            onSwipeDown={() => gestures.onVerticalSwipe("down")}
           />
         </SwiperSlide>
       </Swiper>
-    </>
-  );
+    </div>
+  </div>
+);
+
 }

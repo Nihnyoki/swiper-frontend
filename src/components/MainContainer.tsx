@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { PreferedFamilyTreeSlider } from "./PreferedFamilyTreeSlider";
+import { FamilyTreeSlider } from "../features/family-tree/components/FamilyTreeSlider";
 import FormPerson from "./other/FormPerson";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -9,7 +9,7 @@ export default function MainContainer() {
 
     return (
         <div className="w-full h-full flex">
-            <PreferedFamilyTreeSlider
+            <FamilyTreeSlider
                 personId={personId}
                 componentName="PreferedFamilyTreeSlider"
                 eventName="IdSubmitted"

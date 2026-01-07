@@ -13,6 +13,7 @@ export function buildPersonGraph(persons: Person[]): PersonGraph {
   }
 
   for (const person of persons) {
+    console.log(`Processing children for person ID: ${person.id}`);
     for (const childId of person.childrenIds) {
       if (personsMap[childId]) {
         childrenMap[person.id].push(childId);

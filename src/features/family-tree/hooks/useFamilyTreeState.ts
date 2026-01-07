@@ -13,6 +13,7 @@ export function useFamilyTreeState() {
 
   useEffect(() => {
     getAllPersons().then(data => {
+      console.log('Fetched persons:', data);
       setPersons(data);
       if (!activePersonId && data.length > 0) {
         setActivePersonId(data[0].id);
@@ -23,6 +24,7 @@ export function useFamilyTreeState() {
 
   const graph: PersonGraph | null = useMemo(() => {
     if (!persons.length) return null;
+    console.log('Building person graph with persons count:', persons.length);
     return buildPersonGraph(persons);
   }, [persons]);
 
