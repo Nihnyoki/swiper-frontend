@@ -19,6 +19,9 @@ export default defineConfig({
 
     VitePWA({
       registerType: "autoUpdate",
+      // We register the service worker in code via `virtual:pwa-register`.
+      // Disabling injection avoids relying on a generated `/registerSW.js` asset.
+      injectRegister: null,
       manifest: {
         name: "Sandiles",
         short_name: "Sandiles Swiper",
