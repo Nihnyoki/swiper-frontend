@@ -28,25 +28,23 @@ declare module '@tanstack/react-router' {
 const rootElement = document.getElementById('root')!
 import * as PropTypes from 'prop-types'
 console.log(PropTypes.string); // should NOT be undefined
-if (!rootElement.innerHTML) {
-  
+
+if (import.meta.env.PROD) {
   registerSW({
-  onNeedRefresh() {
-    console.log('New content available, refresh needed.')
-  },
-  onOfflineReady() {
-    console.log('App ready to work offline.')
-  },
-})
+    onNeedRefresh() {
+      console.log('New content available, refresh needed.')
+    },
+    onOfflineReady() {
+      console.log('App ready to work offline.')
+    },
+  })
+}
 
-  const root = ReactDOM.createRoot(rootElement)
-
-
-  root.render(
-    <StrictMode>
+const root = ReactDOM.createRoot(rootElement)
+root.render(
+  <StrictMode>
     <TelemetryProvider>
       <RouterProvider router={router} />
     </TelemetryProvider>
   </StrictMode>,
-  )
-}
+)
