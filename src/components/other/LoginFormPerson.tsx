@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Person } from "@/person/personService";
+import { api } from "@/lib/backend";
 
 interface LoginFormPersonProps {
     idNum: string;
@@ -8,8 +8,6 @@ interface LoginFormPersonProps {
     onError: (error: string) => void;
     onClose: () => void;
 }
-
-const VITE_BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
 export default function LoginFormPerson({ idNum, onSubmit, onError, onClose }: LoginFormPersonProps) {
     const [loading, setLoading] = useState(false);
@@ -20,7 +18,7 @@ export default function LoginFormPerson({ idNum, onSubmit, onError, onClose }: L
         const checkPerson = async () => {
             setLoading(true);
             try {
-                const response = await axios.get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons/${idNum}/with-children`);
+                const response = await api.get<Person>(`/api/persons/${idNum}/with-children`);
                 const person = response.data;
 
                 if (!person || !person.IDNUM) {

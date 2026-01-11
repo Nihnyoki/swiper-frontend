@@ -1,5 +1,5 @@
   import React, { useState, useEffect, useCallback } from 'react'
-  import axios from 'axios'
+  import { api, backendUrl, BACKEND_BASE_URL } from '@/lib/backend'
   import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
   import 'swiper/css'
   import { useTelemetryContext } from '@/lib/TelemetryContext'
@@ -11,9 +11,11 @@
   import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { getImageUrl } from '../lib/utils'
 
-  const BACKEND_IMAGE_URL =`${import.meta.env.VITE_BACKEND_BASE_URL}/${import.meta.env.VITE_USER_IMAGES_PATH}`;
-  const VITE_BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
-  const BACKEND_IMAGE_CATAGORY_PATH = `${VITE_BACKEND_BASE_URL}/PEGETENT/`;
+  const USER_IMAGES_PATH = String(import.meta.env.VITE_USER_IMAGES_PATH ?? "")
+    .replace(/^\/+/, "")
+    .replace(/\/+$/, "");
+  const BACKEND_IMAGE_URL = USER_IMAGES_PATH ? backendUrl(`/${USER_IMAGES_PATH}`) : BACKEND_BASE_URL;
+  const BACKEND_IMAGE_CATAGORY_PATH = backendUrl("/PEGETENT");
 
   function ContentTypeCard({ person, contentType }: { person: Person, contentType: string }) {
     const isPlaceholder = person?.isPlaceholder;
@@ -74,10 +76,10 @@ import { getImageUrl } from '../lib/utils'
     const [secondActiveIndex, setSecondActiveIndex] = useState(secondIndex);
     const [thirdActiveIndex, setThirdActiveIndex] = useState(thirdIndex);
     
-    const fetchPersonData = async function (id: string): Promise<Person[]> {
+    const fetchPersonData = async function (id: string): Promise<Person | null> {
       setLoading(true)
       try {
-        const response = await axios.get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons/${id}/with-children`);
+        const response = await api.get<Person>(`/api/persons/${id}/with-children`)
         const person = response.data;
         console.log(`Fetched person: ${JSON.stringify(person)}`);
         
@@ -85,19 +87,19 @@ import { getImageUrl } from '../lib/utils'
         setPersonSteps([{ people: [person], index: 0 }]);
         setPeople([person]);
         setLoading(false)
-        return [person];
+        return person;
 
       } catch (err) {
         console.error('Failed to fetch persons:', err)
         setLoading(false)
       }
-      return [];
+      return null;
     }
   
     const getChildTree = async function (id: string): Promise<Person> {
       setLoading(true)
       try {
-        const response = await axios.get<Person>(`${VITE_BACKEND_BASE_URL}/api/persons/${id}/with-children`)
+        const response = await api.get<Person>(`/api/persons/${id}/with-children`)
         const person = response.data as unknown as Person
         console.log(`Fetched person: ${JSON.stringify(person)}`)
         
@@ -139,10 +141,7 @@ import { getImageUrl } from '../lib/utils'
     const fetchPeopleTree = async function (start: boolean): Promise<Person[]> {
       setLoading(true)
       try {
-        
-        console.log(`FamilyTreeSlider - param[VITE_BACKEND_BASE_URL]=`, VITE_BACKEND_BASE_URL)
-        
-        const response = await axios.get<Person[]>(`${VITE_BACKEND_BASE_URL}/api/persons/complete`);
+        const response = await api.get<Person[]>(`/api/persons/complete`)
         
         console.log(`FamilyTreeSlider - response[/api/persons/complete]=`, JSON.stringify(response));
 

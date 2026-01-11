@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Image, Video, BookOpen, FilePlus } from "lucide-react";
+import { backendFetch } from "@/lib/backend";
 
 interface AddChildItemProps {
     personId: string;
@@ -37,7 +38,7 @@ export function AddChildItem({ personId, thingKey, onSuccess }: AddChildItemProp
 
         try {
             setLoading(true);
-            const res = await fetch("https://swiper-backend-production.up.railway.app/api/persons/addChild", {
+            const res = await backendFetch("/api/persons/addChild", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

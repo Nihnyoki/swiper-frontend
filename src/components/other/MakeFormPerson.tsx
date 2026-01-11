@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { api } from "@/lib/backend";
 
 interface InputCursorProps {
     show?: boolean;
@@ -46,9 +47,6 @@ export default function MakeFormPerson({ onSubmit, onClose }: MakeFormPersonProp
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-    const VITE_BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
-
 
     const ACTIVITY_OPTIONS = [
         "SOCIAL",
@@ -123,13 +121,9 @@ export default function MakeFormPerson({ onSubmit, onClose }: MakeFormPersonProp
         );
 
         try {
-            const res = await fetch(`${VITE_BACKEND_BASE_URL}/api/persons`, {
-                method: "POST",
-                body: formData,
-            });
-
-            if (!res.ok) throw new Error("Failed to create person");
-            const data = await res.json();
+            const response = await api.post(`/api/persons`, formData);
+            const data = response.data;
+            if (!data?.IDNUM) throw new Error("Failed to create person");
             onSubmit(data.IDNUM);
             onClose();
         } catch (err) {

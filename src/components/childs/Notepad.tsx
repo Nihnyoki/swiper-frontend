@@ -7,6 +7,7 @@ import { LocateUser } from "./LocateUser";
 import { Person } from "@/person/personService";
 import { SafeFilePicker } from "./SafeFilePicker";
 import { uploadToSupabase } from "@/services/uploadToSupabase";
+import { backendFetch } from "@/lib/backend";
 //import { LocateUser } from "./LocateUser";
 
 export interface Note {
@@ -312,8 +313,7 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
             console.log(`formData: ${formData}`);
 
-            const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app";
-            const res = await fetch(`${VITE_CORE_PATH}/api/persons/media/${personId}`, {
+            const res = await backendFetch(`/api/persons/media/${personId}`, {
                 method: "POST",
                 headers: {
                     "x-category": "PERSONAL",
@@ -335,13 +335,12 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
     async function updateNoteReminder(person: Person ,noteId: string, remind: boolean) {
         try {
             if (!person?._id) return;
-            const VITE_CORE_PATH = "https://swiper-backend-production.up.railway.app";
             const endpoint = "media"; // Or 'notes' if you have a dedicated endpoint
             const formData = new FormData();
             formData.append("remind", String(remind));
             formData.append("noteId", noteId);
 
-            const res = await fetch(`${VITE_CORE_PATH}/api/persons/${endpoint}/${person._id}`, {
+            const res = await backendFetch(`/api/persons/${endpoint}/${person._id}`, {
                 method: "PATCH", // assuming PATCH for updating existing childItems
                 body: formData,
             });

@@ -5,9 +5,15 @@ import TransparentDrawer from "./TransparentDrawer";
 import { MusicPlayer } from "./MusicPlayer";
 import type { MusicPlayerHandle } from "./MusicPlayer";
 import { Notepad } from "./Notepad";
+import { backendFetch } from "../../lib/backend";
 
 
-export function PersonalCard({ person, childItems }) {
+type PersonalCardProps = {
+    person: any;
+    childItems: any[];
+};
+
+export function PersonalCard({ person, childItems }: PersonalCardProps) {
     const [activeTab, setActiveTab] = useState(0);
     const [activeIndex, setActiveIndex] = useState(0);
 
@@ -80,7 +86,6 @@ export function PersonalCard({ person, childItems }) {
         mediaType: string
     ) {
         try {
-            const VITE_BACKEND_BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
             const endpoint = "media";
             const normalizedMediaType = mediaType.toLowerCase() as
                 | 'video'
@@ -88,17 +93,14 @@ export function PersonalCard({ person, childItems }) {
                 | 'audio'
                 | 'pdf';
 
-            const res = await fetch(
-                `${VITE_BACKEND_BASE_URL}/api/persons/${endpoint}/${personId}`,
-                {
-                    method: "POST",
-                    headers: {
-                        "x-category": category,
-                        "x-mediatype": normalizedMediaType,
-                    },
-                    body: formData,
-                }
-            );
+            const res = await backendFetch(`/api/persons/${endpoint}/${personId}`, {
+                method: "POST",
+                headers: {
+                    "x-category": category,
+                    "x-mediatype": normalizedMediaType,
+                },
+                body: formData,
+            });
 
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Upload failed");
@@ -110,8 +112,8 @@ export function PersonalCard({ person, childItems }) {
     }
 
     const allItems = childItems[activeTab]?.data ?? [];
-    const audioItems = allItems.filter((i) => i.type === "audio");
-    const nonAudioItems = allItems.filter((i) => i.type !== "audio" && i.type !== "note");
+    const audioItems = allItems.filter((i: any) => i.type === "audio");
+    const nonAudioItems = allItems.filter((i: any) => i.type !== "audio" && i.type !== "note");
 
     const slides = [
         ...(audioItems.length > 0
@@ -160,6 +162,13 @@ export function PersonalCard({ person, childItems }) {
         onTogglePlay,
         onNext,
         onTogglePinned,
+    }: {
+        pinned: boolean;
+        currentTrack: { index: number; title: string } | null;
+        isPlaying: boolean;
+        onTogglePlay: () => void;
+        onNext: () => void;
+        onTogglePinned: () => void;
     }) {
         if (!pinned) {
             return (
@@ -254,7 +263,9 @@ export function PersonalCard({ person, childItems }) {
                                 {item.type === "video" && (
                                     <div className="relative w-full h-full">
                                         <video
-                                            ref={(el) => (videoRefs.current[index] = el!)}
+                                            ref={(el) => {
+                                                videoRefs.current[index] = el!;
+                                            }}
                                             src={item.url}
                                             playsInline
                                             className="absolute inset-0 w-full h-full object-cover rounded-xl z-10"
@@ -300,7 +311,7 @@ export function PersonalCard({ person, childItems }) {
                                     <div className="w-full h-full flex justify-center items-start">
                                         <MusicPlayer
                                             ref={musicPlayerRef}
-                                            audioFiles={childItems[activeTab].data.filter(i => i.type === "audio")}
+                                            audioFiles={childItems[activeTab].data.filter((i: any) => i.type === "audio")}
                                             stopAllSignal={!musicPinned && activeIndex !== index}
                                             onTrackChange={setCurrentTrack}
                                             onPlayStateChange={setIsPlaying}
@@ -332,8 +343,8 @@ export function PersonalCard({ person, childItems }) {
                                             onMapDrag={setMapBeingDragged}
                                             person={person}
                                             initialNotes={childItems[activeTab].data
-                                                .filter(i => i.type === "note")
-                                                .map(n => ({
+                                                .filter((i: any) => i.type === "note")
+                                                .map((n: any) => ({
                                                     ...n,
                                                     lat: Number(n.lat),
                                                     lng: Number(n.lng),
@@ -388,9 +399,9 @@ export function PersonalCard({ person, childItems }) {
                         mediaType
                     );
                     if (uploadedItem) {
-                        const personalThing = person.THINGS.find((t) => t.val === "PERSONAL");
+                        const personalThing = person.THINGS.find((t: any) => t.val === "PERSONAL");
                         const personalThings =
-                            personalThing?.childItems?.find((c) => c.val === "Things");
+                            personalThing?.childItems?.find((c: any) => c.val === "Things");
                         personalThings?.data.push(uploadedItem);
                         // setPerson({ ...person });
                     }

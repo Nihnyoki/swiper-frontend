@@ -3,8 +3,9 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Plus } from "lucide-react";
+import { backendUrl } from "../../lib/backend";
 
-const VITE_IMAGE_CORE_PATH = "http://localhost:3000/IMAGETHS";
+const VITE_IMAGE_CORE_PATH = backendUrl("/IMAGETHS");
 
 interface PersonalCardProps {
     person: any;
