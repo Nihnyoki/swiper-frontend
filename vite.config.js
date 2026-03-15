@@ -82,4 +82,13 @@ export default defineConfig({
       "prop-types": "prop-types/index.js",
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080', // Correct backend port
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
 })

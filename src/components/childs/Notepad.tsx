@@ -1,9 +1,14 @@
-import React, { useState, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
+import React, {
+    useState,
+    useEffect,
+    useRef,
+    forwardRef,
+    useImperativeHandle,
+    useCallback,
+} from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import { v4 as uuid } from "uuid";
-import { DisableSwiperOnMapInteraction } from "./DisableSwiperOnMapInteraction";
-import { LocateUser } from "./LocateUser";
 import { Person } from "@/person/personService";
 import { SafeFilePicker } from "./SafeFilePicker";
 import { uploadToSupabase } from "@/services/uploadToSupabase";
@@ -18,8 +23,9 @@ export interface Note {
     lng: number;
     createdAt: number;
     remind?: boolean;
-        audio?: { type: string, url: string };
-        image?: { type: string, url: string };
+    audio?: { type: string; url: string };
+    image?: { type: string; url: string };
+    files?: Array<{ type: string; url: string }>;
 }
 
 interface NotepadProps {
@@ -49,12 +55,13 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
     const [draftDescription, setdraftDescription] = useState("");
     const [draftAudio, setDraftAudio] = useState<File | null>(null);
     const [draftImage, setDraftImage] = useState<File | null>(null);
-    const [playedNotes, setPlayedNotes] = useState<Set<string>>(new Set());
+    const notesRef = useRef<Note[]>(initialNotes);
     const firedRemindersRef = useRef<Set<string>>(new Set());
     const [selectedLocation, setSelectedLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [expandedNotes, setExpandedNotes] = useState<Set<string>>(new Set());
     const mapRef = useRef<L.Map | null>(null);
+    const hasCenteredOnceRef = useRef(false);
     const [audioMedia, setAudioMedia] = useState<{ type: string; url: string } | null>(null);
     const [imageMedia, setImageMedia] = useState<{ type: string; url: string } | null>(null);
 
@@ -89,11 +96,37 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         return null;
     }
 
+    function UserLocationWatcher({ onLocation }: { onLocation: (loc: { lat: number; lng: number }) => void }) {
+        const map = useMap();
+
+        useEffect(() => {
+            const handler = (e: L.LocationEvent) => {
+                onLocation({ lat: e.latlng.lat, lng: e.latlng.lng });
+            };
+
+            map.locate({
+                watch: true,
+                setView: false,
+                enableHighAccuracy: true,
+                maximumAge: 10_000,
+            });
+            map.on("locationfound", handler);
+
+            return () => {
+                map.off("locationfound", handler);
+                map.stopLocate();
+            };
+        }, [map, onLocation]);
+
+        return null;
+    }
+
     useEffect(() => {
         const recover = () => {
-            if (mapRef.current) {
+            const map = mapRef.current;
+            if (map) {
                 setTimeout(() => {
-                    mapRef.current.invalidateSize({ animate: false });
+                    map.invalidateSize({ animate: false });
                 }, 100);
             }
         };
@@ -104,11 +137,12 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
     // Load initialNotes on mount or when they change
     useEffect(() => {
-        if (initialNotes && initialNotes.length > 0) {
-            setNotes(initialNotes);
-            console.log(`\n\n\n\nInicial Notes: &{JSON.stringify(initialNotes)}`);
-        }
+        setNotes(initialNotes ?? []);
     }, [initialNotes]);     
+
+    useEffect(() => {
+        notesRef.current = notes;
+    }, [notes]);
 
     /** Add note at selected location */
     const addNote = async (person: Person) => {
@@ -156,13 +190,15 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
             // Combine uploaded files into the note object
             const uploadedFiles: Array<{ type: string; url: string }> = [];
-            if (savedNote.audio) uploadedFiles.push({ type: "note", url: savedNote.audio.url });
-            if (savedNote.image) uploadedFiles.push({ type: "note", url: savedNote.image.url });
+            if (savedNote.audio?.url) uploadedFiles.push({ type: "audio", url: savedNote.audio.url });
+            if (savedNote.image?.url) uploadedFiles.push({ type: "image", url: savedNote.image.url });
 
             // Update frontend state
             setNotes(prev => [
                 {
                     ...newNote,
+                    audio: savedNote.audio,
+                    image: savedNote.image,
                     files: uploadedFiles,
                 },
                 ...prev,
@@ -195,53 +231,55 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         return R * c;
     };
 
+    const handleUserLocation = useCallback((loc: { lat: number; lng: number }) => {
+        setUserLocation(loc);
+    }, []);
+
+    useEffect(() => {
+        if (!userLocation) return;
+        if (hasCenteredOnceRef.current) return;
+        const map = mapRef.current;
+        if (!map) return;
+
+        hasCenteredOnceRef.current = true;
+        map.setView([userLocation.lat, userLocation.lng], map.getZoom(), { animate: false });
+    }, [userLocation]);
+
+    const recenterToUser = useCallback(() => {
+        const map = mapRef.current;
+        if (!map || !userLocation) return;
+        map.setView([userLocation.lat, userLocation.lng], map.getZoom(), { animate: true });
+    }, [userLocation]);
+
     /** Proximity check every 5 seconds */
     useEffect(() => {
         if (!userLocation) return;
+
         const interval = setInterval(() => {
-            notes.forEach(note => {
-                if (note.remind && note.audio) {
-                    // Compute distance to note
-                    const dist = distanceKm(userLocation.lat, userLocation.lng, note.lat, note.lng);
+            const currentNotes = notesRef.current;
+            for (const note of currentNotes) {
+                if (!note.remind) continue;
+                if (firedRemindersRef.current.has(note.id)) continue;
 
-                    if (dist <= 0.5!&& playedNotes.has(note.id)) { // within 0.5 km
-                        alert(`You are near your note: "${note.title}"`);
-                        // Play attached audio
-                        const audioEl = new Audio(note.audio.url);
-                        audioEl.play().catch(err => console.warn("Audio playback failed:", err));
-                        setPlayedNotes(prev => new Set(prev).add(note.id));
-                    }
-                } else if (note.remind) {
-                    // No audio, just alert
-                    const dist = distanceKm(userLocation.lat, userLocation.lng, note.lat, note.lng);
-                    if (dist <= 0.5) {
-                        alert(`You are near your note: "${note.title}"`);
-                    }
+                const dist = distanceKm(userLocation.lat, userLocation.lng, note.lat, note.lng);
+                if (dist > 0.5) continue;
+
+                firedRemindersRef.current.add(note.id);
+                alert(`You are near your note: "${note.title}"`);
+
+                const audioUrl =
+                    note.audio?.url ??
+                    note.files?.find((f) => f.type === "audio" || f.type === "note")?.url;
+
+                if (audioUrl) {
+                    const audioEl = new Audio(audioUrl);
+                    audioEl.play().catch((err) => console.warn("Audio playback failed:", err));
                 }
-            });
+            }
         }, 5000);
+
         return () => clearInterval(interval);
-    }, [notes, userLocation]);
-
-    function UserLocationMarker() {
-        const map = useMap();
-
-        useEffect(() => {
-            map.locate({ setView: false });
-
-            map.on("locationfound", (e) => {
-                L.marker(e.latlng, { icon: userIcon })
-                    .addTo(map)
-                    .bindPopup("You are here");
-            });
-
-            return () => {
-                map.off("locationfound");
-            };
-        }, [map]);
-
-        return null;
-    }
+    }, [userLocation]);
 
     function MapInitializer({ mapRef }: { mapRef: React.RefObject<L.Map | null> }) {
         const map = useMap();
@@ -253,31 +291,6 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         return null;
     }
 
-
-    function SwiperGestureController({
-        onMapInteraction,
-    }: {
-        onMapInteraction?: (active: boolean) => void;
-    }) {
-        const map = useMap();
-
-        useEffect(() => {
-            if (!onMapInteraction) return;
-
-            const start = () => onMapInteraction(true);
-            const end = () => onMapInteraction(false);
-
-            map.on("mousedown touchstart dragstart", start);
-            map.on("mouseup touchend dragend", end);
-
-            return () => {
-                map.off("mousedown touchstart dragstart", start);
-                map.off("mouseup touchend dragend", end);
-            };
-        }, [map, onMapInteraction]);
-
-        return null;
-    }
 
     function MapInteractionHandler({ onDrag }: { onDrag?: (dragging: boolean) => void }) {
         const map = useMap();
@@ -302,6 +315,21 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
         }, [map, onDrag]);
 
         return null;
+    }
+
+    function RecenterButton({ disabled, onClick }: { disabled: boolean; onClick: () => void }) {
+        return (
+            <button
+                type="button"
+                disabled={disabled}
+                onClick={onClick}
+                className="absolute top-2 right-2 z-[500] w-8 h-8 rounded-full bg-black/50 text-white text-xs flex items-center justify-center disabled:opacity-40"
+                aria-label="Recenter map"
+                title="Recenter"
+            >
+                ⦿
+            </button>
+        );
     }
 
     /** POST note to backend */
@@ -359,16 +387,29 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
 
             {/* MAP */}
             <div className="h-1/3 w-full border-b border-black/10">
-                <MapContainer className="w-full h-full rounded-b-xl">
-                    <LocateUser fallback={[-26.2041, 28.0473]} zoom={27} /> 
-                    <UserLocationMarker />
-                    <MapInitializer mapRef={mapRef} />
-                    <MapInteractionHandler onDrag={props.onMapDrag} />
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <LocationPicker />
-                    {selectedLocation && <Marker position={[selectedLocation.lat, selectedLocation.lng]} />}
-                    {notes.map(note => <Marker key={note.id} position={[note.lat, note.lng]} />)}
-                </MapContainer>
+                <div className="relative w-full h-full">
+                    <MapContainer
+                        className="w-full h-full rounded-b-xl"
+                        center={[-26.2041, 28.0473]}
+                        zoom={27}
+                    >
+                        <UserLocationWatcher onLocation={handleUserLocation} />
+                        <MapInitializer mapRef={mapRef} />
+                        <MapInteractionHandler onDrag={props.onMapDrag} />
+                        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                        <LocationPicker />
+                        {userLocation && (
+                            <Marker
+                                position={[userLocation.lat, userLocation.lng]}
+                                icon={userIcon}
+                            />
+                        )}
+                        {selectedLocation && <Marker position={[selectedLocation.lat, selectedLocation.lng]} />}
+                        {notes.map(note => <Marker key={note.id} position={[note.lat, note.lng]} />)}
+                    </MapContainer>
+
+                    <RecenterButton disabled={!userLocation} onClick={recenterToUser} />
+                </div>
 
             </div>
 
