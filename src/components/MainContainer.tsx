@@ -16,10 +16,20 @@ export default function MainContainer() {
         if (loading || !hasMore) return;
         setLoading(true);
         try {
-            const response = await fetch(`/api/persons/paginated-people?page=${page}&limit=5`);
+            const response = await fetch(`/api/api/persons/paginated-people?page=${page}&limit=3`);
             const data = await response.json();
-            setPeople((prev) => [...prev, ...data.people]);
-            setHasMore(data.hasMore);
+
+            // Log the response structure for debugging
+            console.log("Fetched data:", data);
+
+            // Ensure data.data is an array before iterating
+            if (Array.isArray(data.data)) {
+                setPeople((prev) => [...prev, ...data.data]);
+            } else {
+                console.error("Unexpected response structure: data.data is not an array", data);
+            }
+
+            setHasMore(data.page < Math.ceil(data.total / data.limit));
             setPage((prev) => prev + 1);
         } catch (error) {
             console.error("Failed to fetch people:", error);
