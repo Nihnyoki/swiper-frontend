@@ -6,6 +6,7 @@ import { MusicPlayer } from "./MusicPlayer";
 import type { MusicPlayerHandle } from "./MusicPlayer";
 import { Notepad } from "./Notepad";
 import { backendFetch } from "../../lib/backend";
+import { supabase } from "../../services/supabaseClient"; // Ensure Supabase client is imported
 
 
 type PersonalCardProps = {
@@ -199,7 +200,6 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
         }
     }
 
-    
     const stopAllMedia = useCallback(() => {
         videoRefs.current.forEach((v) => v?.pause());
         audioRefs.current.forEach((a) => a?.pause());
@@ -235,6 +235,40 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
         setActiveIndex(0);
     }, [activeTab, stopAllMedia]);
 
+    const handleDeleteMedia = async (mediaToDelete: { name: string }, personId: string) => {
+        try {
+            // Remove from Supabase
+            const { error: supabaseError } = await supabase.storage
+                .from("media")
+                .remove([mediaToDelete.name]);
+
+            if (supabaseError) {
+                console.error("Failed to delete media from Supabase:", supabaseError);
+                alert("Failed to delete media from storage.");
+                return;
+            }
+
+            // Remove from MongoDB
+            const response = await backendFetch(`/api/persons/delete-media/${personId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ mediaName: mediaToDelete.name }),
+            });
+
+            if (!response.ok) {
+                console.error("Failed to delete media from MongoDB:", await response.text());
+                alert("Failed to delete media from database.");
+                return;
+            }
+
+            alert("Media deleted successfully.");
+        } catch (error) {
+            console.error("Error deleting media:", error);
+            alert("An error occurred while deleting the media.");
+        }
+    };
 
     return (
         <div className="relative flex-col w-full h-full overflow-y-auto rounded-xl shadow-1xl flex bg-gradient-to-tr from-black/80 to-gray-400 text-white">
@@ -309,6 +343,25 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
                                                     className="w-8 h-8 flex items-center justify-center text-white bg-white/20 border border-white/10 rounded-full text-xl"
                                                 >
                                                     +
+                                                </button>
+
+                                                {/* Delete button */}
+                                                <button
+                                                    onClick={() => {
+                                                        if (slides[activeIndex]?.kind === "media") {
+                                                            const activeMedia = slides[activeIndex];
+                                                            if (activeMedia.mediaType === "video" || activeMedia.mediaType === "image" || activeMedia.mediaType === "pdf") {
+                                                                const confirmDelete = confirm(`Are you sure you want to delete this ${activeMedia.mediaType}?`);
+                                                                if (confirmDelete) {
+                                                                    const mediaName = activeMedia.url.split("/").pop() || ""; // Ensure mediaName is always a string
+                                                                    handleDeleteMedia({ name: mediaName }, person._id);
+                                                                }
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="w-8 h-8 flex items-center justify-center text-white bg-white/20 border border-white/10 border-white/10 rounded-full text-xl"
+                                                >
+                                                    🗑️
                                                 </button>
                                             </div>
                                         )}
@@ -391,7 +444,6 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
                     musicPlayerRef.current?.next();
                 }}
             />
-
 
             {/* UPLOAD DRAWER */}
             <TransparentDrawer

@@ -28,6 +28,42 @@ export function PersonalCardPinkPlus({ person, onAddChildItem }: PersonalCardPro
         }
     };
 
+    const handleDeleteMedia = async (mediaToDelete: File) => {
+        try {
+            // Remove from Supabase
+            const { error: supabaseError } = await supabase.storage
+                .from("media")
+                .remove([mediaToDelete.name]);
+
+            if (supabaseError) {
+                console.error("Failed to delete media from Supabase:", supabaseError);
+                alert("Failed to delete media from storage.");
+                return;
+            }
+
+            // Remove from MongoDB
+            const response = await fetch(`${backendUrl}/delete-media`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ mediaName: mediaToDelete.name }),
+            });
+
+            if (!response.ok) {
+                console.error("Failed to delete media from MongoDB:", await response.text());
+                alert("Failed to delete media from database.");
+                return;
+            }
+
+            // Remove from local state
+            setSelectedVideos(selectedVideos.filter(media => media !== mediaToDelete));
+        } catch (error) {
+            console.error("Error deleting media:", error);
+            alert("An error occurred while deleting the media.");
+        }
+    };
+
     return (
         <div className="relative w-full h-full overflow-hidden bg-gray-800">
             {/* Video Grid Underneath */}
@@ -47,6 +83,16 @@ export function PersonalCardPinkPlus({ person, onAddChildItem }: PersonalCardPro
                             <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 text-center">
                                 {video.name}
                             </div>
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteMedia(video);
+                                }}
+                                className="absolute top-1 right-1 bg-red-600 rounded-full p-1 shadow-md hover:bg-red-500 transition-colors"
+                                title="Remove video"
+                            >
+                                &times;
+                            </button>
                         </div>
                     ))
                 ) : (
@@ -102,6 +148,24 @@ export function PersonalCardPinkPlus({ person, onAddChildItem }: PersonalCardPro
                         />
                     )}
                 </label>
+
+                {/* Delete Media Button */}
+                <button
+                    className="absolute bottom-6 right-24 z-20 bg-red-500 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer"
+                    onClick={() => {
+                        if (selectedVideos.length === 0) {
+                            alert("No media to delete.");
+                            return;
+                        }
+                        const confirmDelete = confirm("Are you sure you want to delete this media?");
+                        if (confirmDelete) {
+                            handleDeleteMedia(selectedVideos[0]); // Example: Deletes the first selected media
+                        }
+                    }}
+                    title="Delete Media"
+                >
+                    <Plus className="w-8 h-8 rotate-45" />
+                </button>
             </motion.div>
         </div>
     );
