@@ -16,7 +16,7 @@ export default function MainContainer() {
         if (loading || !hasMore) return;
         setLoading(true);
         try {
-            const response = await fetch(`/api/api/persons/paginated-people?page=${page}&limit=3`);
+            const response = await fetch(`/api/persons/paginated-people?page=${page}&limit=3`);
             const data = await response.json();
 
             // Log the response structure for debugging
