@@ -1,18 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { PreferedFamilyTreeSlider } from "./PreferedFamilyTreeSlider";
 import FormPerson from "./other/FormPerson";
 import { AnimatePresence, motion } from "framer-motion";
+import { Person } from "@/person/personService";
 
 export default function MainContainer() {
-    const [personId, setPersonId] = useState<string>("AFEGATH"); // active person ID
+    const [personId, setPersonId] = useState<string | null>(null);
     const [showFormPerson, setShowFormPerson] = useState(true);
+    const [people, setPeople] = useState<Person[]>([]);
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [loading, setLoading] = useState(false);
+
+    const fetchPeople = useCallback(async () => {
+        if (loading || !hasMore) return;
+        setLoading(true);
+        try {
+            const response = await fetch(`/api/api/persons/paginated-people?page=${page}&limit=3`);
+            const data = await response.json();
+
+            // Log the response structure for debugging
+            console.log("Fetched data:", data);
+
+            // Ensure data.data is an array before iterating
+            if (Array.isArray(data.data)) {
+                setPeople((prev) => [...prev, ...data.data]);
+            } else {
+                console.error("Unexpected response structure: data.data is not an array", data);
+            }
+
+            setHasMore(data.page < Math.ceil(data.total / data.limit));
+            setPage((prev) => prev + 1);
+        } catch (error) {
+            console.error("Failed to fetch people:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [page, hasMore, loading]);
+
+    useEffect(() => {
+        fetchPeople();
+    }, [fetchPeople]);
+
+    const handleScroll = useCallback(() => {
+        if (
+            window.innerHeight + document.documentElement.scrollTop >=
+            document.documentElement.offsetHeight - 100
+        ) {
+            fetchPeople();
+        }
+    }, [fetchPeople]);
+
+    useEffect(() => {
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [handleScroll]);
 
     return (
         <div className="w-full h-full flex">
             <PreferedFamilyTreeSlider
-                personId={personId}
+                personId={personId || ""} // Provide a fallback empty string
                 componentName="PreferedFamilyTreeSlider"
                 eventName="IdSubmitted"
+                people={people}
             />
 
             {/* Modal */}
