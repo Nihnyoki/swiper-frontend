@@ -85,7 +85,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // Correct backend port
+        target: 'http://swiper-backend-production.up.railway.app:8080', // Correct backend port
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/nothing/, ''),
       },
