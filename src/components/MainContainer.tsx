@@ -16,7 +16,11 @@ export default function MainContainer() {
         if (loading || !hasMore) return;
         setLoading(true);
         try {
-            const response = await fetch(`/api/persons/paginated-people?page=${page}&limit=3`);
+            
+            const API_BASE = import.meta.env.VITE_BACKEND_BASE_URL || "http://swiper-backend-production.up.railway.app:8080";
+            const response = await fetch(`${API_BASE}/api/persons/paginated-people?page=${page}&limit=3`);
+
+            //const response = await fetch(`/api/persons/paginated-people?page=${page}&limit=3`);
             const data = await response.json();
 
             // Log the response structure for debugging
