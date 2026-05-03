@@ -71,6 +71,8 @@ const PersonCard = React.memo(function PersonCard({
           src={imageAddress}
           alt={(person as any)?.IFATH?.path || 'Person IMAGETH'}
           className="absolute top-0 left-0 w-1/2 h-1/2 object-cover opacity-70 mix-blend-lighten"
+          loading="lazy"
+          decoding="async"
           style={{ objectPosition: 'top left' }}
         />
       )}
@@ -120,6 +122,8 @@ const ContentTypeCard = React.memo(function ContentTypeCard({
           src={imageAddress}
           alt={contentType || 'ContentType'}
           className="absolute top-0 left-0 w-full h-1/2 object-cover opacity-70 mix-blend-lighten"
+          loading="lazy"
+          decoding="async"
           style={{ objectPosition: 'top left' }}
         />
       )}
@@ -207,11 +211,39 @@ export function PreferedFamilyTreeSlider({
     const currentChildItems = (currentThing as any)?.childItems as any[] | undefined;
     const hasChildItems = Array.isArray(currentChildItems) && currentChildItems.length > 0;
 
+    const [lazyLoadingOffset, setLazyLoadingOffset] = useState(3);
+    const [childItems, setChildItems] = useState(currentChildItems || []);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+
+    const loadMoreChildItems = useCallback(async () => {
+        if (isLoadingMore || !currentThing) return;
+        setIsLoadingMore(true);
+        try {
+            const response = await api.get(
+                `/api/persons/lazy-load-children?categoryId=${currentThing.id}&offset=${lazyLoadingOffset}&limit=3`
+            );
+            const data = await response.data;
+            if (Array.isArray(data)) {
+                setChildItems((prev) => [...prev, ...data]);
+                setLazyLoadingOffset((prev) => prev + data.length);
+            }
+        } catch (error) {
+            console.error("Failed to load more child items:", error);
+        } finally {
+            setIsLoadingMore(false);
+        }
+    }, [currentThing, lazyLoadingOffset, isLoadingMore]);
+
     useEffect(() => {
         if (currentPerson) {
             setSecondActiveIndex(getPersonsHighestThingsValWhereChildItemsExist(currentPerson));
         }
     }, [currentPerson]);
+
+    useEffect(() => {
+        setChildItems(currentChildItems || []);
+        setLazyLoadingOffset(3);
+    }, [currentChildItems]);
 
     const handleMainSlideChange = useCallback(
         (swiper: any) => {
@@ -236,7 +268,6 @@ export function PreferedFamilyTreeSlider({
                         <div className="w-full h-full relative pointer-events-auto">
                             {currentPerson && currentThing && (
                                 <Swiper
-                                    key={firstActiveIndex}
                                     direction="vertical"
                                     slidesPerView={1}
                                     onSlideChange={handleMainSlideChange}
@@ -259,7 +290,6 @@ export function PreferedFamilyTreeSlider({
                         <div className="flex w-full h-full z-10 relative pointer-events-auto">
                             {currentPerson && currentThing?.val && (
                                 <Swiper
-                                    key={secondActiveIndex}
                                     direction="vertical"
                                     slidesPerView={1}
                                     onSlideChange={handleContentTypeSlideChange}
@@ -297,7 +327,7 @@ export function PreferedFamilyTreeSlider({
                                     person={currentPerson}
                                     width="w-full"
                                     THING={(currentThing as any).val}
-                                    childItems={currentChildItems!}
+                                    childItems={childItems}
                                 />
                             </div>
                         ) : (
@@ -319,6 +349,16 @@ export function PreferedFamilyTreeSlider({
                                     childItems={[]}
                                 />
                             </div>
+                        )}
+
+                        {hasChildItems && (
+                            <button
+                                onClick={loadMoreChildItems}
+                                disabled={isLoadingMore}
+                                className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+                            >
+                                {isLoadingMore ? "Loading..." : "Load More"}
+                            </button>
                         )}
                     </div>
                 </Panel>
