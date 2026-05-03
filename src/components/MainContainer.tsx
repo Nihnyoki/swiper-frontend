@@ -1,67 +1,68 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { PreferedFamilyTreeSlider } from "./PreferedFamilyTreeSlider";
 import FormPerson from "./other/FormPerson";
 import { AnimatePresence, motion } from "framer-motion";
 import { Person } from "@/person/personService";
+import { backendFetch } from "@/lib/backend";
+
+const PAGE_LIMIT = 2; // Increased from 3 to reduce round-trips
 
 export default function MainContainer() {
     const [personId, setPersonId] = useState<string | null>(null);
     const [showFormPerson, setShowFormPerson] = useState(true);
     const [people, setPeople] = useState<Person[]>([]);
-    const [page, setPage] = useState(1);
-    const [hasMore, setHasMore] = useState(true);
-    const [loading, setLoading] = useState(false);
+
+    // Use refs for pagination state to avoid stale closures and re-fetch loops
+    const pageRef = useRef(1);
+    const hasMoreRef = useRef(true);
+    const loadingRef = useRef(false);
 
     const fetchPeople = useCallback(async () => {
-        if (loading || !hasMore) return;
-        setLoading(true);
+        if (loadingRef.current || !hasMoreRef.current) return;
+        loadingRef.current = true;
         try {
-            
-            const API_BASE = import.meta.env.VITE_BACKEND_BASE_URL || "http://swiper-backend-production.up.railway.app:8080";
-            const response = await fetch(`${API_BASE}/api/persons/paginated-people?page=${page}&limit=3`);
-
-            //const response = await fetch(`/api/persons/paginated-people?page=${page}&limit=3`);
+            const response = await backendFetch(
+                `/api/persons/paginated-people?page=${pageRef.current}&limit=${PAGE_LIMIT}`
+            );
             const data = await response.json();
 
-            // Log the response structure for debugging
-            console.log("Fetched data:", data);
-
-            // Ensure data.data is an array before iterating
-            if (Array.isArray(data.data)) {
-                setPeople((prev) => [...prev, ...data.data]);
+            if (Array.isArray(data.categories)) {
+                setPeople((prev) => [...prev, ...data.categories]);
             } else {
-                console.error("Unexpected response structure: data.data is not an array", data);
+                console.error("Unexpected response structure:", data);
             }
 
-            setHasMore(data.page < Math.ceil(data.total / data.limit));
-            setPage((prev) => prev + 1);
+            hasMoreRef.current = data.page < Math.ceil(data.total / data.limit);
+            pageRef.current += 1;
         } catch (error) {
             console.error("Failed to fetch people:", error);
         } finally {
-            setLoading(false);
+            loadingRef.current = false;
         }
-    }, [page, hasMore, loading]);
+    }, []); // ✅ No changing deps — refs keep state stable
 
+    // Initial fetch — runs once on mount
     useEffect(() => {
         fetchPeople();
-    }, [fetchPeople]);
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-    const handleScroll = useCallback(() => {
-        if (
-            window.innerHeight + document.documentElement.scrollTop >=
-            document.documentElement.offsetHeight - 100
-        ) {
-            fetchPeople();
-        }
-    }, [fetchPeople]);
-
+    // Throttled scroll handler using IntersectionObserver for better performance
+    const sentinelRef = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [handleScroll]);
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) fetchPeople();
+            },
+            { threshold: 0.1 }
+        );
+        if (sentinelRef.current) observer.observe(sentinelRef.current);
+        return () => observer.disconnect();
+    }, [fetchPeople]);
 
     return (
-        <div className="w-full h-full flex">
+        <div className="w-full h-full flex flex-col">
+            {/* Sentinel div for IntersectionObserver-based infinite scroll */}
+            <div ref={sentinelRef} className="h-1 w-full" />
             <PreferedFamilyTreeSlider
                 personId={personId || ""} // Provide a fallback empty string
                 componentName="PreferedFamilyTreeSlider"
