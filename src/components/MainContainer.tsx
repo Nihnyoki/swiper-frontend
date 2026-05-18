@@ -26,8 +26,20 @@ export default function MainContainer() {
             );
             const data = await response.json();
 
-            if (Array.isArray(data.categories)) {
-                setPeople((prev) => [...prev, ...data.categories]);
+            if (Array.isArray(data.data)) {
+                const processedPeople = data.data.map((person) => {
+                    return {
+                        ...person,
+                        THINGS: person.THINGS.map((thing) => ({
+                            ...thing,
+                            childItems: thing.childItems.map((child) => ({
+                                ...child,
+                                data: child.data || [],
+                            })),
+                        })),
+                    };
+                });
+                setPeople((prev) => [...prev, ...processedPeople]);
             } else {
                 console.error("Unexpected response structure:", data);
             }
