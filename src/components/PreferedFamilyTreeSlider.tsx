@@ -196,7 +196,8 @@ export function PreferedFamilyTreeSlider({
     eventName = 'FamilyTreeSwipe',
     componentName,
     people,
-  }: TelemetryProps & { people: Person[] }) {
+    onRequestMorePeople,
+  }: TelemetryProps & { people: Person[]; onRequestMorePeople?: () => void }) {
     const telemetry = useTelemetryContext();
     const [firstActiveIndex, setFirstActiveIndex] = useState(0);
     const [secondActiveIndex, setSecondActiveIndex] = useState(0);
@@ -217,8 +218,11 @@ export function PreferedFamilyTreeSlider({
         (swiper: any) => {
             const index = swiper.activeIndex;
             setFirstActiveIndex(index);
+            if (onRequestMorePeople && index >= people.length - 1) {
+                onRequestMorePeople();
+            }
         },
-        [people]
+        [people.length, onRequestMorePeople]
     );
 
     const handleContentTypeSlideChange = useCallback((swiper: SwiperClass) => {
