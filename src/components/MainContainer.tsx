@@ -6,11 +6,37 @@ import { Person } from "@/person/personService";
 import { backendFetch } from "@/lib/backend";
 
 const PAGE_LIMIT = 2; // Increased from 3 to reduce round-trips
+const LOADING_IMAGES = Array.from({ length: 7 }, (_, index) => `/loading-pictures/loading-${index}.jpeg`);
+
+function LoadingScreen({ imageUrl }: { imageUrl: string }) {
+    return (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4">
+            <div className="relative w-full max-w-lg rounded-3xl overflow-hidden border border-white/20 shadow-2xl">
+                <img
+                    src={imageUrl}
+                    alt="Loading artwork"
+                    className="w-full h-full object-cover opacity-95"
+                    loading="eager"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+            </div>
+            <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-center px-4">
+                <p className="text-sm uppercase tracking-[0.3em] text-pink-300">Loading...</p>
+                <h1 className="text-3xl font-semibold text-white">Almost there</h1>
+                <p className="max-w-xl text-sm text-white/75">
+                    Please wait while the app fetches your family and media content. We’ll switch to the app as soon as the data is ready.
+                </p>
+            </div>
+        </div>
+    );
+}
 
 export default function MainContainer() {
     const [personId, setPersonId] = useState<string | null>(null);
     const [showFormPerson, setShowFormPerson] = useState(true);
     const [people, setPeople] = useState<Person[]>([]);
+    const [isInitialLoading, setIsInitialLoading] = useState(true);
+    const [loadingImageIndex, setLoadingImageIndex] = useState(0);
 
     // Use refs for pagination state to avoid stale closures and re-fetch loops
     const pageRef = useRef(1);
@@ -40,6 +66,9 @@ export default function MainContainer() {
                     };
                 });
                 setPeople((prev) => [...prev, ...processedPeople]);
+                if (pageRef.current === 1) {
+                    setIsInitialLoading(false);
+                }
             } else {
                 console.error("Unexpected response structure:", data);
             }
@@ -48,6 +77,9 @@ export default function MainContainer() {
             pageRef.current += 1;
         } catch (error) {
             console.error("Failed to fetch people:", error);
+            if (pageRef.current === 1) {
+                setIsInitialLoading(false);
+            }
         } finally {
             loadingRef.current = false;
         }
@@ -57,6 +89,14 @@ export default function MainContainer() {
     useEffect(() => {
         fetchPeople();
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        if (!isInitialLoading) return;
+        const interval = window.setInterval(() => {
+            setLoadingImageIndex((current) => (current + 1) % LOADING_IMAGES.length);
+        }, 1200);
+        return () => window.clearInterval(interval);
+    }, [isInitialLoading]);
 
     // Throttled scroll handler using IntersectionObserver for better performance
     const sentinelRef = useRef<HTMLDivElement | null>(null);
@@ -70,9 +110,8 @@ export default function MainContainer() {
         if (sentinelRef.current) observer.observe(sentinelRef.current);
         return () => observer.disconnect();
     }, [fetchPeople]);
-
     return (
-        <div className="w-full h-full flex flex-col">
+        <div className="w-full h-full flex flex-col relative">
             {/* Sentinel div for IntersectionObserver-based infinite scroll */}
             <div ref={sentinelRef} className="h-1 w-full" />
             <PreferedFamilyTreeSlider
@@ -116,6 +155,9 @@ export default function MainContainer() {
                     </motion.div>
                 )}
             </AnimatePresence>
+            {isInitialLoading && people.length === 0 && (
+                <LoadingScreen imageUrl={LOADING_IMAGES[loadingImageIndex]} />
+            )}
         </div>
     );
 }
