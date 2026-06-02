@@ -1,5 +1,7 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useRef } from 'react'
 import { MusicPlayer } from './MusicPlayer'
+import TransparentDrawer from './TransparentDrawer'
+import { backendFetch } from '@/lib/backend'
 
 type MusicCardProps = {
   person: any
@@ -23,7 +25,10 @@ function resolveTitle(item: any) {
   return item.title || item.name || item.label || 'Untitled track'
 }
 
-export function MusicCard({ childItems }: MusicCardProps) {
+export function MusicCard({ person, childItems }: MusicCardProps) {
+  const [drawerOpen, setDrawerOpen] = useState(false)
+  const musicPlayerRef = useRef<any>(null)
+
   const audioFiles = useMemo(() => {
     return childItems
       .flatMap((child) => Array.isArray(child.data) ? child.data : [])
@@ -37,20 +42,95 @@ export function MusicCard({ childItems }: MusicCardProps) {
       .filter((item) => item.url)
   }, [childItems])
 
-  if (audioFiles.length === 0) {
-    return (
-      <div className="flex h-full w-full items-center justify-center rounded-xl bg-black/70 text-white">
-        <div className="text-center px-6">
-          <p className="text-lg font-semibold">No music available</p>
-          <p className="text-sm text-white/70">Add audio files to the MUSIC category to see them here.</p>
-        </div>
-      </div>
-    )
+  async function handleUpload(
+    formData: FormData,
+    personId: string,
+    mediaType: string
+  ) {
+    try {
+      const endpoint = "media";
+      const normalizedMediaType = mediaType.toLowerCase() as 'audio';
+
+      const res = await backendFetch(`/api/persons/${endpoint}/${personId}`, {
+        method: "POST",
+        headers: {
+          "x-category": "MUSIC",
+          "x-mediatype": normalizedMediaType,
+        },
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Upload failed");
+      return data[normalizedMediaType];
+    } catch (err) {
+      console.error(`Upload error (audio):`, err);
+      throw err;
+    }
   }
+
+  const emptyState = (
+    <div className="flex h-full w-full flex-col items-center justify-center gap-6 rounded-xl bg-black/70 text-white p-6">
+      <div className="text-center space-y-3">
+        <p className="text-lg font-semibold">🎵 No music yet</p>
+        <p className="text-sm text-white/70">Upload your favorite tracks to build your music library.</p>
+      </div>
+      <button
+        onClick={() => setDrawerOpen(true)}
+        className="px-6 py-2 bg-pink-500 hover:bg-pink-600 text-white rounded-lg font-medium transition-colors"
+      >
+        + Add Audio
+      </button>
+    </div>
+  )
 
   return (
     <div className="relative h-full w-full rounded-xl overflow-hidden bg-black/80">
-      <MusicPlayer audioFiles={audioFiles} />
+      {audioFiles.length === 0 ? (
+        emptyState
+      ) : (
+        <>
+          <MusicPlayer ref={musicPlayerRef} audioFiles={audioFiles} />
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="absolute bottom-6 right-6 z-20 w-12 h-12 rounded-full bg-pink-500/80 hover:bg-pink-600 text-white flex items-center justify-center text-xl shadow-lg transition-all"
+            title="Add audio"
+          >
+            +
+          </button>
+        </>
+      )}
+      
+      <TransparentDrawer
+        person={person}
+        isOpen={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        type="audio"
+        onSubmit={async (formData, mediaType) => {
+          const uploadedItem = await handleUpload(
+            formData,
+            person._id,
+            mediaType
+          );
+          if (uploadedItem) {
+            let musicThing = person.THINGS.find((t: any) => t.val === 'MUSIC');
+            if (!musicThing) {
+              musicThing = {
+                key: person.THINGS.length,
+                val: 'MUSIC',
+                childItems: [{ key: 0, val: 'Tracks', data: [] }],
+              };
+              person.THINGS.push(musicThing);
+            }
+            let musicChild = musicThing.childItems?.find((c: any) => c.val === 'Tracks');
+            if (!musicChild) {
+              musicChild = { key: musicThing.childItems.length, val: 'Tracks', data: [] };
+              musicThing.childItems.push(musicChild);
+            }
+            musicChild.data.push(uploadedItem);
+          }
+        }}
+      />
     </div>
   )
 }
