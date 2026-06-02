@@ -24,7 +24,7 @@ function LoadingScreen({ imageUrl }: { imageUrl: string }) {
                 <p className="text-sm uppercase tracking-[0.3em] text-pink-300">Loading...</p>
                 <h1 className="text-3xl font-semibold text-white">Almost there</h1>
                 <p className="max-w-xl text-sm text-white/75">
-                    Please wait while the app fetches your family and media content. We’ll switch to the app as soon as the data is ready.
+                    ✨
                 </p>
             </div>
         </div>
