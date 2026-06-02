@@ -94,7 +94,7 @@ export default function MainContainer() {
         if (!isInitialLoading) return;
         const interval = window.setInterval(() => {
             setLoadingImageIndex((current) => (current + 1) % LOADING_IMAGES.length);
-        }, 1200);
+        }, 4000);
         return () => window.clearInterval(interval);
     }, [isInitialLoading]);
 
