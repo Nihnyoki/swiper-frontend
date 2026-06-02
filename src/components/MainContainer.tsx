@@ -76,10 +76,11 @@ export default function MainContainer() {
             {/* Sentinel div for IntersectionObserver-based infinite scroll */}
             <div ref={sentinelRef} className="h-1 w-full" />
             <PreferedFamilyTreeSlider
-                personId={personId || ""} // Provide a fallback empty string
+                personId={personId || ""}
                 componentName="PreferedFamilyTreeSlider"
                 eventName="IdSubmitted"
                 people={people}
+                onRequestMorePeople={fetchPeople}
             />
 
             {/* Modal */}
