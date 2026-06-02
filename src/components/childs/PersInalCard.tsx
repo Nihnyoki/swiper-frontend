@@ -185,7 +185,7 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
             const res = await backendFetch(`/api/persons/${endpoint}/${personId}`, {
                 method: "POST",
                 headers: {
-                    "x-category": category,
+                    "x-category": normalizedMediaType === 'audio' ? 'MUSIC' : category,
                     "x-mediatype": normalizedMediaType,
                 },
                 body: formData,
@@ -459,11 +459,28 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
                         mediaType
                     );
                     if (uploadedItem) {
-                        const personalThing = person.THINGS.find((t: any) => t.val === "PERSONAL");
-                        const personalThings =
-                            personalThing?.childItems?.find((c: any) => c.val === "Things");
-                        personalThings?.data.push(uploadedItem);
-                        // setPerson({ ...person });
+                        if (mediaType === 'audio') {
+                            let musicThing = person.THINGS.find((t: any) => t.val === 'MUSIC');
+                            if (!musicThing) {
+                                musicThing = {
+                                    key: person.THINGS.length,
+                                    val: 'MUSIC',
+                                    childItems: [{ key: 0, val: 'Tracks', data: [] }],
+                                };
+                                person.THINGS.push(musicThing);
+                            }
+                            let musicChild = musicThing.childItems?.find((c: any) => c.val === 'Tracks');
+                            if (!musicChild) {
+                                musicChild = { key: musicThing.childItems.length, val: 'Tracks', data: [] };
+                                musicThing.childItems.push(musicChild);
+                            }
+                            musicChild.data.push(uploadedItem);
+                        } else {
+                            const personalThing = person.THINGS.find((t: any) => t.val === 'PERSONAL');
+                            const personalThings =
+                                personalThing?.childItems?.find((c: any) => c.val === 'Things');
+                            personalThings?.data.push(uploadedItem);
+                        }
                     }
                 }}
             />

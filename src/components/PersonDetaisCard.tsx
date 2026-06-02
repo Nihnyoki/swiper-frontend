@@ -6,7 +6,7 @@ import { ProfessionalCard } from './childs/ProfessionalCard'
 import { FunCard } from './childs/FunCard'
 import { CultureCard } from './childs/CultureCard'
 import { PersonalCard } from './childs/PersInalCard'
- 
+import { MusicCard } from './childs/MusicCard'
 
 interface PersonCardDetailsProps {
   person: any
@@ -36,12 +36,9 @@ export function PersonCardDetails({
       case "CULTURE":
         return <CultureCard person={person} flex-1 w-full h-full childItems={childItems} />;
       case "PERSONAL":
-        console.log(`childItems=${JSON.stringify(childItems)}`)
-         try {
-           return <PersonalCard person={person} flex-1 w-full h-full childItems={childItems} />;
-        } catch (e) {
-          console.log(`${e}`)
-        }
+        return <PersonalCard person={person} flex-1 w-full h-full childItems={childItems} />;
+      case "MUSIC":
+        return <MusicCard person={person} childItems={childItems} />;
       default:
         return <FamilyCard person={person} flex-1 w-full h-full childItems={childItems} />;
   }
