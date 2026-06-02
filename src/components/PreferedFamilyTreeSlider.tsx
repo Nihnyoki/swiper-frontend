@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useCallback } from 'react'
+import React, { useEffect, useMemo, useState, useCallback, useRef } from 'react'
 import { api, backendUrl, BACKEND_BASE_URL } from '@/lib/backend'
 import { Swiper, SwiperClass, SwiperSlide } from 'swiper/react'
 import 'swiper/css'
@@ -214,15 +214,83 @@ export function PreferedFamilyTreeSlider({
         }
     }, [currentPerson]);
 
+    const mainSwiperRef = useRef<SwiperClass | null>(null);
+
+    const isNavigatingRef = useRef(false);
+
+    const goToPerson = useCallback(
+      (delta: number) => {
+        if (isNavigatingRef.current) return;
+        const target = Math.max(0, Math.min(people.length - 1, firstActiveIndex + delta));
+        if (target === firstActiveIndex) return;
+        isNavigatingRef.current = true;
+        if (mainSwiperRef.current && typeof (mainSwiperRef.current as any).slideTo === 'function') {
+          try {
+            ;(mainSwiperRef.current as any).slideTo(target);
+          } catch (e) {
+            setFirstActiveIndex(target);
+          }
+        } else {
+          setFirstActiveIndex(target);
+        }
+        setTimeout(() => {
+          isNavigatingRef.current = false;
+        }, 300);
+      },
+      [firstActiveIndex, people.length]
+    );
+
+    const gestureRef = useRef({ startX: 0, startY: 0, tracking: false });
+
+    const onTouchStart = useCallback((e: React.TouchEvent) => {
+      const t = e.touches && e.touches[0];
+      if (!t) return;
+      gestureRef.current = { startX: t.clientX, startY: t.clientY, tracking: true };
+    }, []);
+
+    const onTouchEnd = useCallback(
+      (e: React.TouchEvent) => {
+        if (!gestureRef.current.tracking) return;
+        const t = e.changedTouches && e.changedTouches[0];
+        if (!t) return;
+        const dx = t.clientX - gestureRef.current.startX;
+        const dy = t.clientY - gestureRef.current.startY;
+        gestureRef.current.tracking = false;
+        if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx)) {
+          if (dy < 0) goToPerson(1);
+          else goToPerson(-1);
+        }
+      },
+      [goToPerson]
+    );
+
+    const onPointerDown = useCallback((e: React.PointerEvent) => {
+      gestureRef.current = { startX: e.clientX, startY: e.clientY, tracking: true };
+    }, []);
+
+    const onPointerUp = useCallback(
+      (e: React.PointerEvent) => {
+        if (!gestureRef.current.tracking) return;
+        const dx = e.clientX - gestureRef.current.startX;
+        const dy = e.clientY - gestureRef.current.startY;
+        gestureRef.current.tracking = false;
+        if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx)) {
+          if (dy < 0) goToPerson(1);
+          else goToPerson(-1);
+        }
+      },
+      [goToPerson]
+    );
+
     const handleMainSlideChange = useCallback(
-        (swiper: any) => {
-            const index = swiper.activeIndex;
-            setFirstActiveIndex(index);
-            if (onRequestMorePeople && index >= people.length - 1) {
-                onRequestMorePeople();
-            }
-        },
-        [people.length, onRequestMorePeople]
+      (swiper: any) => {
+        const index = swiper.activeIndex;
+        setFirstActiveIndex(index);
+        if (onRequestMorePeople && index >= people.length - 1) {
+          onRequestMorePeople();
+        }
+      },
+      [people.length, onRequestMorePeople]
     );
 
     const handleContentTypeSlideChange = useCallback((swiper: SwiperClass) => {
@@ -240,13 +308,14 @@ export function PreferedFamilyTreeSlider({
                         <div className="w-full h-full relative pointer-events-auto">
                             {currentPerson && currentThing && (
                                 <Swiper
-                                    key={firstActiveIndex}
-                                    direction="vertical"
-                                    slidesPerView={1}
-                                    onSlideChange={handleMainSlideChange}
-                                    allowTouchMove={true}
-                                    className="w-full h-full"
-                                    initialSlide={firstActiveIndex}
+                                  key={firstActiveIndex}
+                                  direction="vertical"
+                                  slidesPerView={1}
+                                  onSlideChange={handleMainSlideChange}
+                                  onSwiper={(s) => (mainSwiperRef.current = s)}
+                                  allowTouchMove={true}
+                                  className="w-full h-full"
+                                  initialSlide={firstActiveIndex}
                                 >
                                     {people.map((p, idx) => (
                                         <SwiperSlide
@@ -296,33 +365,45 @@ export function PreferedFamilyTreeSlider({
                 <Panel>
                     <div className="flex-col w-full h-full overflow-y-auto flex-1 z-10 relative pointer-events-auto">
                         {hasChildItems ? (
-                            <div className="cursor-pointer w-full h-full">
-                                <PersonCardDetails
-                                    person={currentPerson}
-                                    width="w-full"
-                                    THING={(currentThing as any).val}
-                                    childItems={currentChildItems!}
-                                />
-                            </div>
+                          <div
+                            className="cursor-pointer w-full h-full"
+                            onTouchStart={onTouchStart}
+                            onTouchEnd={onTouchEnd}
+                            onPointerDown={onPointerDown}
+                            onPointerUp={onPointerUp}
+                          >
+                            <PersonCardDetails
+                              person={currentPerson}
+                              width="w-full"
+                              THING={(currentThing as any).val}
+                              childItems={currentChildItems!}
+                            />
+                          </div>
                         ) : (
-                            <div className="cursor-pointer w-full h-full">
-                                <PersonCardDetails
-                                    person={{
-                                        THINGS: "FAMILY",
-                                        IDNUM: "WORKETH",
-                                        NAME: "WORKETH",
-                                        LASTNAME: "WORKETH",
-                                        TYPETH: "No Descendants",
-                                        AGETH: "WORKETH",
-                                        IMAGETH: `${BACKEND_IMAGE_URL}/CULTURE.jpg`,
-                                        EMOJIMETH: "💵",
-                                        isPlaceholder: true,
-                                    }}
-                                    THING="CULTURE"
-                                    width="w-full"
-                                    childItems={[]}
-                                />
-                            </div>
+                          <div
+                            className="cursor-pointer w-full h-full"
+                            onTouchStart={onTouchStart}
+                            onTouchEnd={onTouchEnd}
+                            onPointerDown={onPointerDown}
+                            onPointerUp={onPointerUp}
+                          >
+                            <PersonCardDetails
+                              person={{
+                                THINGS: "FAMILY",
+                                IDNUM: "WORKETH",
+                                NAME: "WORKETH",
+                                LASTNAME: "WORKETH",
+                                TYPETH: "No Descendants",
+                                AGETH: "WORKETH",
+                                IMAGETH: `${BACKEND_IMAGE_URL}/CULTURE.jpg`,
+                                EMOJIMETH: "💵",
+                                isPlaceholder: true,
+                              }}
+                              THING="CULTURE"
+                              width="w-full"
+                              childItems={[]}
+                            />
+                          </div>
                         )}
                     </div>
                 </Panel>
