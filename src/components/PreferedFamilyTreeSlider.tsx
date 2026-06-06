@@ -44,8 +44,11 @@ const PersonCard = React.memo(function PersonCard({
   const isPlaceholder = person?.isPlaceholder
 
   const imageAddress = useMemo(() => {
-    return getImageUrl(imageBaseUrl, (person as any)?.IMAGE)
-  }, [imageBaseUrl, (person as any)?.IMAGE])
+    const p: any = person as any;
+    // Prefer `IMAGETH` (newer), then `IMAGE`, then nested `IFATH.path`
+    const candidate = p?.IMAGETH ?? p?.IMAGE ?? p?.IFATH?.path;
+    return getImageUrl(imageBaseUrl, candidate)
+  }, [imageBaseUrl, (person as any)?.IMAGETH, (person as any)?.IMAGE, (person as any)?.IFATH?.path])
 
   return (
     <div
@@ -79,7 +82,7 @@ const PersonCard = React.memo(function PersonCard({
         show={true}
         background="transparent"
         color="#ffffff"
-        onCursorClick={onOpenForm}
+        onCursorClick={() => onOpenForm?.()}
       />
     </div>
   )
@@ -163,10 +166,7 @@ function CwayithimazCursorCurtain({
   if (!show) return null
 
   return (
-    <div
-      className="fixed inset-4 top-37 flex items-center justify-start z-50"
-      style={{ background: background }}
-    >
+    <div className="absolute top-15 left-2 z-20 flex items-center" style={{ background }}>
       <div className="flex gap-1">
         {Array.from({ length: cursorCount }).map((_, i) => (
           <span
@@ -197,7 +197,8 @@ export function PreferedFamilyTreeSlider({
     componentName,
     people,
     onRequestMorePeople,
-  }: TelemetryProps & { people: Person[]; onRequestMorePeople?: () => void }) {
+    onOpenForm,
+  }: TelemetryProps & { people: Person[]; onRequestMorePeople?: () => void; onOpenForm?: () => void }) {
     const telemetry = useTelemetryContext();
     const [firstActiveIndex, setFirstActiveIndex] = useState(0);
     const [secondActiveIndex, setSecondActiveIndex] = useState(0);
@@ -318,12 +319,12 @@ export function PreferedFamilyTreeSlider({
                                   initialSlide={firstActiveIndex}
                                 >
                                     {people.map((p, idx) => (
-                                        <SwiperSlide
-                                            key={p.IDNUM || idx}
-                                            className="flex items-center justify-center w-full h-full"
-                                        >
-                                            <PersonCard person={p} imageBaseUrl={BACKEND_IMAGE_URL} onOpenForm={() => {}} />
-                                        </SwiperSlide>
+                                      <SwiperSlide
+                                        key={p.IDNUM || idx}
+                                        className="flex items-center justify-center w-full h-full"
+                                      >
+                                        <PersonCard person={p} imageBaseUrl={BACKEND_IMAGE_URL} onOpenForm={() => onOpenForm?.()} />
+                                      </SwiperSlide>
                                     ))}
                                 </Swiper>
                             )}
