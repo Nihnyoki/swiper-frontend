@@ -215,6 +215,22 @@ export function PreferedFamilyTreeSlider({
         }
     }, [currentPerson]);
 
+    useEffect(() => {
+      if (!currentPerson) return;
+      const pid = (currentPerson as any)?.IDNUM ?? (currentPerson as any)?.NAME ?? 'unknown';
+      const things = (currentPerson as any)?.THINGS;
+      if (!Array.isArray(things) || things.length === 0) {
+        console.warn(`[telemetry] person ${pid} has no THINGS`);
+        console.warn('telemetry context', telemetry);
+        return;
+      }
+      const hasChild = things.some((t: any) => Array.isArray(t.childItems) && t.childItems.length > 0);
+      if (!hasChild) {
+        console.warn(`[telemetry] person ${pid} has THINGS but none have childItems`);
+        console.warn('telemetry context', telemetry);
+      }
+    }, [currentPerson, telemetry]);
+
     const mainSwiperRef = useRef<SwiperClass | null>(null);
 
     const isNavigatingRef = useRef(false);
@@ -299,7 +315,7 @@ export function PreferedFamilyTreeSlider({
         setSecondActiveIndex(index);
     }, []);
 
-    if (!currentPerson) return <p>No persons available</p>;
+    //if (!currentPerson) return <p>No persons available</p>;
 
     return (
         <div className="flex flex-col items-center gap-1 w-full h-full bg-pink-100 rounded-xl mx-auto relative">
@@ -365,47 +381,29 @@ export function PreferedFamilyTreeSlider({
 
                 <Panel>
                     <div className="flex-col w-full h-full overflow-y-auto flex-1 z-10 relative pointer-events-auto">
-                        {hasChildItems ? (
-                          <div
-                            className="cursor-pointer w-full h-full"
-                            onTouchStart={onTouchStart}
-                            onTouchEnd={onTouchEnd}
-                            onPointerDown={onPointerDown}
-                            onPointerUp={onPointerUp}
-                          >
+                        <div
+                          className="cursor-pointer w-full h-full"
+                          onTouchStart={onTouchStart}
+                          onTouchEnd={onTouchEnd}
+                          onPointerDown={onPointerDown}
+                          onPointerUp={onPointerUp}
+                        >
+                          {hasChildItems && currentThing ? (
                             <PersonCardDetails
                               person={currentPerson}
                               width="w-full"
                               THING={(currentThing as any).val}
                               childItems={currentChildItems!}
                             />
-                          </div>
-                        ) : (
-                          <div
-                            className="cursor-pointer w-full h-full"
-                            onTouchStart={onTouchStart}
-                            onTouchEnd={onTouchEnd}
-                            onPointerDown={onPointerDown}
-                            onPointerUp={onPointerUp}
-                          >
-                            <PersonCardDetails
-                              person={{
-                                THINGS: "FAMILY",
-                                IDNUM: "WORKETH",
-                                NAME: "WORKETH",
-                                LASTNAME: "WORKETH",
-                                TYPETH: "No Descendants",
-                                AGETH: "WORKETH",
-                                IMAGETH: `${BACKEND_IMAGE_URL}/CULTURE.jpg`,
-                                EMOJIMETH: "💵",
-                                isPlaceholder: true,
-                              }}
-                              THING="CULTURE"
-                              width="w-full"
-                              childItems={[]}
-                            />
-                          </div>
-                        )}
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              <div className="text-center">
+                                <p className="text-sm">No content available</p>
+                                <p className="text-xs text-gray-500">Select another category or add content.</p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                     </div>
                 </Panel>
             </PanelGroup>

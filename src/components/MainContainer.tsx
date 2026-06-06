@@ -132,14 +132,16 @@ export default function MainContainer() {
         <div className="w-full h-full flex flex-col relative">
             {/* Sentinel div for IntersectionObserver-based infinite scroll */}
             <div ref={sentinelRef} className="h-1 w-full" />
-            <PreferedFamilyTreeSlider
-                personId={personId || ""}
-                componentName="PreferedFamilyTreeSlider"
-                eventName="IdSubmitted"
-                people={people}
-                onRequestMorePeople={fetchPeople}
-                onOpenForm={() => setShowFormPerson(true)}
-            />
+            {people.length > 0 && (
+                <PreferedFamilyTreeSlider
+                    personId={personId || ""}
+                    componentName="PreferedFamilyTreeSlider"
+                    eventName="IdSubmitted"
+                    people={people}
+                    onRequestMorePeople={fetchPeople}
+                    onOpenForm={() => setShowFormPerson(true)}
+                />
+            )}
 
             {/* Modal */}
             <AnimatePresence>
