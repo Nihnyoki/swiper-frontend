@@ -166,7 +166,7 @@ function CwayithimazCursorCurtain({
   if (!show) return null
 
   return (
-    <div className="absolute top-15 left-2 z-20 flex items-center" style={{ background }}>
+    <div className="absolute top-17 left-2 z-20 flex items-center" style={{ background }}>
       <div className="flex gap-1">
         {Array.from({ length: cursorCount }).map((_, i) => (
           <span
