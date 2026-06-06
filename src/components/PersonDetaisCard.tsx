@@ -23,8 +23,9 @@ export function PersonCardDetails({
   THING,
   childItems,
 }: PersonCardDetailsProps) {
+  const resolvedThing = String(THING || "").trim().toUpperCase();
 
-    switch (THING) {
+  switch (resolvedThing) {
       case "FAMILY":
         return <FamilyCard person={person} flex-1 w-full h-full childItems={childItems} />;
       case "SOCIAL":
@@ -38,6 +39,8 @@ export function PersonCardDetails({
       case "PERSONAL":
         return <PersonalCard person={person} flex-1 w-full h-full childItems={childItems} />;
       case "MUSIC":
+      case "AUDIO":
+      case "SONGS":
         return <MusicCard person={person} childItems={childItems} />;
       default:
         return <FamilyCard person={person} flex-1 w-full h-full childItems={childItems} />;

@@ -33,7 +33,7 @@ function LoadingScreen({ imageUrl }: { imageUrl: string }) {
 
 export default function MainContainer() {
     const [personId, setPersonId] = useState<string | null>(null);
-    const [showFormPerson, setShowFormPerson] = useState(true);
+    const [showFormPerson, setShowFormPerson] = useState(false);
     const [people, setPeople] = useState<Person[]>([]);
     const [isInitialLoading, setIsInitialLoading] = useState(true);
     const [loadingImageIndex, setLoadingImageIndex] = useState(0);
@@ -54,15 +54,33 @@ export default function MainContainer() {
 
             if (Array.isArray(data.data)) {
                 const processedPeople = data.data.map((person) => {
+                    const thingsWithDefaults = person.THINGS.map((thing) => ({
+                        ...thing,
+                        childItems: thing.childItems.map((child) => ({
+                            ...child,
+                            data: child.data || [],
+                        })),
+                    }));
+
+                    // Ensure MUSIC category exists with nested MUSIC childItem
+                    const hasMusicCategory = thingsWithDefaults.some((t) => t.val === 'MUSIC');
+                    if (!hasMusicCategory) {
+                        thingsWithDefaults.push({
+                            key: thingsWithDefaults.length,
+                            val: 'MUSIC',
+                            childItems: [
+                                {
+                                    key: 0,
+                                    val: 'MUSIC',
+                                    data: [],
+                                },
+                            ],
+                        });
+                    }
+
                     return {
                         ...person,
-                        THINGS: person.THINGS.map((thing) => ({
-                            ...thing,
-                            childItems: thing.childItems.map((child) => ({
-                                ...child,
-                                data: child.data || [],
-                            })),
-                        })),
+                        THINGS: thingsWithDefaults,
                     };
                 });
                 setPeople((prev) => [...prev, ...processedPeople]);
@@ -120,6 +138,7 @@ export default function MainContainer() {
                 eventName="IdSubmitted"
                 people={people}
                 onRequestMorePeople={fetchPeople}
+                onOpenForm={() => setShowFormPerson(true)}
             />
 
             {/* Modal */}
