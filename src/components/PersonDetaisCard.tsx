@@ -1,10 +1,8 @@
 import React, { useState} from 'react'
 import 'swiper/css'
 import { FamilyCard } from './childs/FamilyCard'
-import { SocialCard } from './childs/SocialCard'
-import { ProfessionalCard } from './childs/ProfessionalCard'
+// Social/Professional/Culture categories removed from app
 import { FunCard } from './childs/FunCard'
-import { CultureCard } from './childs/CultureCard'
 import { PersonalCard } from './childs/PersInalCard'
 import { MusicCard } from './childs/MusicCard'
 
@@ -28,15 +26,12 @@ export function PersonCardDetails({
   switch (resolvedThing) {
       case "FAMILY":
         return <FamilyCard person={person} flex-1 w-full h-full childItems={childItems} />;
-      case "SOCIAL":
-        return <SocialCard person={person} flex-1 w-full h-full childItems={childItems} />;
-      case "PROFESSIONAL":
-        return <ProfessionalCard person={person} flex-1 childItems={childItems} />;
+      // SOCIAL and PROFESSIONAL removed — fall through to defaults
       case "FUN":
         return <FunCard person={person} w-full h-full overflow-y-auto childItems={childItems} />;
-      case "CULTURE":
-        return <CultureCard person={person} flex-1 w-full h-full childItems={childItems} />;
+      // CULTURE removed — fall through to defaults
       case "PERSONAL":
+      case "C👁️NT👀NT":
         return <PersonalCard person={person} flex-1 w-full h-full childItems={childItems} />;
       case "MUSIC":
       case "AUDIO":

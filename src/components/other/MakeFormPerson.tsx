@@ -49,12 +49,9 @@ export default function MakeFormPerson({ onSubmit, onClose }: MakeFormPersonProp
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const ACTIVITY_OPTIONS = [
-        "SOCIAL",
-        "PROFESSIONAL",
         "FUN",
         "CHILDREN",
-        "CULTURE",
-        "PERSONAL",
+        "C👁️NT👀NT",
     ];
 
     const toggleActivity = (act: string) => {

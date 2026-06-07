@@ -344,10 +344,8 @@ export const Notepad = forwardRef((props: NotepadProps, ref) => {
             const res = await backendFetch(`/api/persons/media/${personId}`, {
                 method: "POST",
                 headers: {
-                    "x-category": "PERSONAL",
-                    "x-mediatype": "note",
+                    "x-category": "C👁️NT👀NT",
                 },
-                body: formData,
             });
 
             const data = await res.json();
