@@ -424,7 +424,7 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
                     </Swiper>
                 ) : (
                     <div className="italic text-gray-500 text-center">
-                        No personal content available.
+                        No C👁️NT👀NT content available.
                     </div>
                 )}
             </div>
@@ -455,7 +455,7 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
                     const uploadedItem = await handleUpload(
                         formData,
                         person._id,
-                        "PERSONAL",
+                        "C👁️NT👀NT",
                         mediaType
                     );
                     if (uploadedItem) {
@@ -476,7 +476,7 @@ export function PersonalCard({ person, childItems }: PersonalCardProps) {
                             }
                             musicChild.data.push(uploadedItem);
                         } else {
-                            const personalThing = person.THINGS.find((t: any) => t.val === 'PERSONAL');
+                            const personalThing = person.THINGS.find((t: any) => t.val === 'C👁️NT👀NT' || t.val === 'PERSONAL');
                             const personalThings =
                                 personalThing?.childItems?.find((c: any) => c.val === 'Things');
                             personalThings?.data.push(uploadedItem);
