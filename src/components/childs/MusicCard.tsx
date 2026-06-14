@@ -2,6 +2,9 @@ import React, { useMemo, useState, useRef } from 'react'
 import { MusicPlayer } from './MusicPlayer'
 import TransparentDrawer from './TransparentDrawer'
 import { backendFetch } from '@/lib/backend'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import 'swiper/css'
+import { Notepad } from './Notepad'
 
 type MusicCardProps = {
   person: any
@@ -28,6 +31,8 @@ function resolveTitle(item: any) {
 export function MusicCard({ person, childItems }: MusicCardProps) {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const musicPlayerRef = useRef<any>(null)
+  const [activeIndex, setActiveIndex] = useState(0)
+  const swiperRef = useRef<any>(null)
 
   const audioFiles = useMemo(() => {
     return childItems
@@ -40,6 +45,24 @@ export function MusicCard({ person, childItems }: MusicCardProps) {
         thumbnailUrl: item.thumbnailUrl || item.image?.url || '/default-music.jpeg',
       }))
       .filter((item) => item.url)
+  }, [childItems])
+
+  const noteItems = useMemo(() => {
+    return childItems
+      .flatMap((child) => Array.isArray(child.data) ? child.data : [])
+      .filter((item: any) => item?.type === 'note')
+      .map((n: any) => ({
+        id: n.id ?? n._id ?? `${n.type}-${Math.random()}`,
+        title: n.title || n.name || 'Note',
+        description: n.description || '',
+        lat: Number(n.lat) || 0,
+        lng: Number(n.lng) || 0,
+        createdAt: n.createdAt ? new Date(n.createdAt).getTime() : Date.now(),
+        remind: !!n.remind,
+        audio: n.audio ?? null,
+        image: n.image ?? null,
+        files: n.files ?? [],
+      }))
   }, [childItems])
 
   async function handleUpload(
@@ -86,21 +109,39 @@ export function MusicCard({ person, childItems }: MusicCardProps) {
 
   return (
     <div className="relative h-full w-full rounded-xl overflow-hidden bg-black/80">
-      {audioFiles.length === 0 ? (
-        emptyState
-      ) : (
-        <>
-          <MusicPlayer ref={musicPlayerRef} audioFiles={audioFiles} />
-          <button
-            onClick={() => setDrawerOpen(true)}
-            className="absolute bottom-6 right-6 z-20 w-12 h-12 rounded-full bg-pink-500/80 hover:bg-pink-600 text-white flex items-center justify-center text-xl shadow-lg transition-all"
-            title="Add audio"
-          >
-            +
-          </button>
-        </>
-      )}
-      
+      <Swiper
+        spaceBetween={10}
+        slidesPerView={1}
+        onSlideChange={(s) => setActiveIndex(s.activeIndex)}
+        onSwiper={(s) => (swiperRef.current = s)}
+        className="h-full w-full"
+      >
+        <SwiperSlide className="h-full w-full flex items-center justify-center">
+          <div className="relative h-full w-full">
+            {audioFiles.length === 0 ? (
+              emptyState
+            ) : (
+              <>
+                <MusicPlayer ref={musicPlayerRef} audioFiles={audioFiles} />
+                <button
+                  onClick={() => setDrawerOpen(true)}
+                  className="absolute bottom-6 right-6 z-20 w-12 h-12 rounded-full bg-pink-500/80 hover:bg-pink-600 text-white flex items-center justify-center text-xl shadow-lg transition-all"
+                  title="Add audio"
+                >
+                  +
+                </button>
+              </>
+            )}
+          </div>
+        </SwiperSlide>
+
+        <SwiperSlide className="h-full w-full">
+          <div className="h-full w-full">
+            <Notepad person={person} initialNotes={noteItems} />
+          </div>
+        </SwiperSlide>
+      </Swiper>
+
       <TransparentDrawer
         person={person}
         isOpen={drawerOpen}
@@ -131,6 +172,17 @@ export function MusicCard({ person, childItems }: MusicCardProps) {
           }
         }}
       />
+      {/* Pager buttons for Music <-> Notes */}
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2">
+        {[0, 1].map((i) => (
+          <button
+            key={i}
+            onClick={() => swiperRef.current?.slideTo(i)}
+            aria-label={i === 0 ? 'Music' : 'Notes'}
+            className={`w-3 h-3 rounded-full transition-all ${activeIndex === i ? 'bg-pink-400 scale-110' : 'bg-white/40'}`}
+          />
+        ))}
+      </div>
     </div>
   )
 }
